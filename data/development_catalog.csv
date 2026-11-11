@@ -1,0 +1,25 @@
+track_id,title,artist,duration_seconds,genre,bpm,energy,mood,source
+dev-01,Development Groove 01,Fictional Test Ensemble,180,funk,65,0.1,relaxed,synthetic fixture; not real music; not measured
+dev-02,Development Groove 02,Fictional Test Ensemble,195,jazz,70,0.175,happy,synthetic fixture; not real music; not measured
+dev-03,Development Groove 03,Fictional Test Ensemble,210,electronic,75,0.25,energetic,synthetic fixture; not real music; not measured
+dev-04,Development Groove 04,Fictional Test Ensemble,225,ambient,80,0.325,melancholic,synthetic fixture; not real music; not measured
+dev-05,Development Groove 05,Fictional Test Ensemble,240,funk,85,0.4,relaxed,synthetic fixture; not real music; not measured
+dev-06,Development Groove 06,Fictional Test Ensemble,255,jazz,90,0.475,happy,synthetic fixture; not real music; not measured
+dev-07,Development Groove 07,Fictional Test Ensemble,180,electronic,95,0.55,energetic,synthetic fixture; not real music; not measured
+dev-08,Development Groove 08,Fictional Test Ensemble,195,ambient,100,0.625,melancholic,synthetic fixture; not real music; not measured
+dev-09,Development Groove 09,Fictional Test Ensemble,210,funk,105,0.7,relaxed,synthetic fixture; not real music; not measured
+dev-10,Development Groove 10,Fictional Test Ensemble,225,jazz,110,0.775,happy,synthetic fixture; not real music; not measured
+dev-11,Development Groove 11,Fictional Test Ensemble,240,electronic,115,0.85,energetic,synthetic fixture; not real music; not measured
+dev-12,Development Groove 12,Fictional Test Ensemble,255,ambient,120,0.925,melancholic,synthetic fixture; not real music; not measured
+dev-13,Development Groove 13,Fictional Test Ensemble,180,funk,125,0.1,relaxed,synthetic fixture; not real music; not measured
+dev-14,Development Groove 14,Fictional Test Ensemble,195,jazz,130,0.175,happy,synthetic fixture; not real music; not measured
+dev-15,Development Groove 15,Fictional Test Ensemble,210,electronic,135,0.25,energetic,synthetic fixture; not real music; not measured
+dev-16,Development Groove 16,Fictional Test Ensemble,225,ambient,140,0.325,melancholic,synthetic fixture; not real music; not measured
+dev-17,Development Groove 17,Fictional Test Ensemble,240,funk,145,0.4,relaxed,synthetic fixture; not real music; not measured
+dev-18,Development Groove 18,Fictional Test Ensemble,255,jazz,150,0.475,happy,synthetic fixture; not real music; not measured
+dev-19,Development Groove 19,Fictional Test Ensemble,180,electronic,155,0.55,energetic,synthetic fixture; not real music; not measured
+dev-20,Development Groove 20,Fictional Test Ensemble,195,ambient,160,0.625,melancholic,synthetic fixture; not real music; not measured
+dev-21,Development Groove 21,Fictional Test Ensemble,210,funk,165,0.7,relaxed,synthetic fixture; not real music; not measured
+dev-22,Development Groove 22,Fictional Test Ensemble,225,jazz,170,0.775,happy,synthetic fixture; not real music; not measured
+dev-23,Development Groove 23,Fictional Test Ensemble,240,electronic,175,0.85,energetic,synthetic fixture; not real music; not measured
+dev-24,Development Groove 24,Fictional Test Ensemble,255,ambient,180,0.925,melancholic,synthetic fixture; not real music; not measured
