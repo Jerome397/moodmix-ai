@@ -10,3 +10,4 @@ numpy>=1.26,<3
 librosa>=0.11,<0.12
 soundfile>=0.13,<0.14
 python-multipart>=0.0.20,<1
+onnxruntime>=1.23,<2

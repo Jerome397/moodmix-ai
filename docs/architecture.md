@@ -19,7 +19,7 @@ These are project design choices informed by the course topics, not claimed inst
 
 ## Current boundaries
 
-A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. Local audio signal analysis is implemented. A pretrained audio classifier and experimental comparison remain upcoming; Gemini connectivity is verified on a live smoke request. Synthetic fixtures test software behavior only. Tests substituting a fake SDK or HTTP transport verify retries and validation, not Transformer quality or provider access.
+A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. Local audio signal analysis is implemented. Local pretrained music classification is implemented; experimental comparison remains upcoming; Gemini connectivity is verified on a live smoke request. Synthetic fixtures test software behavior only. Tests substituting a fake SDK or HTTP transport verify retries and validation, not Transformer quality or provider access.
 
 The real catalog has unknown mood; no mood penalty is applied during baseline retrieval. The UI obtains genre options and provenance from the backend health response. Metadata is historical; source links refer to the dataset when a track-specific URL is unavailable. No recordings are redistributed.
 
@@ -34,3 +34,7 @@ Constraint repair can select a duration-fitting subset only from valid, unique m
 ## Audio signal boundary
 
 `backend/audio.py` decodes bounded MP3/WAV uploads, extracts local signal descriptors and returns `AudioAnalysis`. The async endpoint closes uploads on every path and runs CPU work in a worker thread. Source-channel RMS is preserved without gain normalization; tempo/spectral analysis uses 22.05 kHz mono with cancellation detection. Silence has null BPM and no fabricated mood. The Streamlit analysis page plots small envelopes and exports JSON. No audio enters the LLM prompt or feature-distance retrieval yet. See `docs/audio-analysis.md` for the exact conventions.
+
+## Local pretrained music understanding
+
+Optional upload inference uses the official MTG MusiCNN ONNX encoder (200-dimensional embeddings), four independent binary mood heads and nine-class Dortmund genre head. CPU sessions load once from checksum-verified local files. Model prediction is optional, skips silence/short recordings, and fails gracefully without suppressing signal features. Scores are uncalibrated; no pretrained benchmark is claimed as our own result. Mood/genre estimates are not yet used in recommendation retrieval. Licensing and preprocessing details are in `docs/audio-models.md`.

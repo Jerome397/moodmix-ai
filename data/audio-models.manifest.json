@@ -1,0 +1,158 @@
+{
+  "source": "MTG-UPF Essentia models",
+  "license": "CC BY-NC-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "files": [
+    {
+      "filename": "genre_dortmund-msd-musicnn-1.json",
+      "url": "https://essentia.upf.edu/models/classification-heads/genre_dortmund/genre_dortmund-msd-musicnn-1.json",
+      "sha256": "25568ff60de54aeb6aef2d8d7fe0b208fec5cb8770396d02b8877d7aa5f120bd",
+      "bytes": 2428,
+      "classes": [
+        "alternative",
+        "blues",
+        "electronic",
+        "folkcountr",
+        "funksoulrnb",
+        "jazz",
+        "pop",
+        "raphiphop",
+        "rock"
+      ]
+    },
+    {
+      "filename": "genre_dortmund-msd-musicnn-1.onnx",
+      "url": "https://essentia.upf.edu/models/classification-heads/genre_dortmund/genre_dortmund-msd-musicnn-1.onnx",
+      "sha256": "6c8093d3bb28ab43eb957f31d3250a8fea9916daf32bbc2d57f908e654af0480",
+      "bytes": 84930
+    },
+    {
+      "filename": "mood_aggressive-msd-musicnn-1.json",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_aggressive/mood_aggressive-msd-musicnn-1.json",
+      "sha256": "a3030dca0f3cbefd2a0f300ec97c24cfc65092df8798218699f8e110b3f0d1d0",
+      "bytes": 2345,
+      "classes": [
+        "aggressive",
+        "not_aggressive"
+      ]
+    },
+    {
+      "filename": "mood_aggressive-msd-musicnn-1.onnx",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_aggressive/mood_aggressive-msd-musicnn-1.onnx",
+      "sha256": "28121d76b36549584f99d3ab2f2ea11561dd5a2617ae15c2d83b9a4cd96ae9a8",
+      "bytes": 82104
+    },
+    {
+      "filename": "mood_happy-msd-musicnn-1.json",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_happy/mood_happy-msd-musicnn-1.json",
+      "sha256": "db474eef51d8216dd885e5dd417af5f0dfec87ec2107b9e089157fd5cbda00d2",
+      "bytes": 2309,
+      "classes": [
+        "happy",
+        "non_happy"
+      ]
+    },
+    {
+      "filename": "mood_happy-msd-musicnn-1.onnx",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_happy/mood_happy-msd-musicnn-1.onnx",
+      "sha256": "250db7b11d058af80c13cec62f3b2e3712cd241d9a07c5a2f42239fe4362d9ac",
+      "bytes": 82094
+    },
+    {
+      "filename": "mood_relaxed-msd-musicnn-1.json",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_relaxed/mood_relaxed-msd-musicnn-1.json",
+      "sha256": "2e0aba50ce50b785e23d8dcbb029aa7b64dd926487599d5dc0bcc8b5ec78e582",
+      "bytes": 2323,
+      "classes": [
+        "non_relaxed",
+        "relaxed"
+      ]
+    },
+    {
+      "filename": "mood_relaxed-msd-musicnn-1.onnx",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_relaxed/mood_relaxed-msd-musicnn-1.onnx",
+      "sha256": "0f80db5cbbb4913687875a03174d734f49acdcce02b7247aaeade8463d18e04a",
+      "bytes": 82098
+    },
+    {
+      "filename": "mood_sad-msd-musicnn-1.json",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_sad/mood_sad-msd-musicnn-1.json",
+      "sha256": "9761da8e18db2ea54c5fca78bd0fcd533eeab92cd208ff7bf3e7e4e818d74a31",
+      "bytes": 2294,
+      "classes": [
+        "non_sad",
+        "sad"
+      ]
+    },
+    {
+      "filename": "mood_sad-msd-musicnn-1.onnx",
+      "url": "https://essentia.upf.edu/models/classification-heads/mood_sad/mood_sad-msd-musicnn-1.onnx",
+      "sha256": "3861d5611dcaad31f1377875a58b92d9673486cbc2776ad4e3194462a751a894",
+      "bytes": 82090
+    },
+    {
+      "filename": "msd-musicnn-1.json",
+      "url": "https://essentia.upf.edu/models/feature-extractors/musicnn/msd-musicnn-1.json",
+      "sha256": "8e6b3b509f0610c0e65dce467fd459d6777509388eaddb13ed138d8ac1341ffe",
+      "bytes": 3299,
+      "classes": [
+        "rock",
+        "pop",
+        "alternative",
+        "indie",
+        "electronic",
+        "female vocalists",
+        "dance",
+        "00s",
+        "alternative rock",
+        "jazz",
+        "beautiful",
+        "metal",
+        "chillout",
+        "male vocalists",
+        "classic rock",
+        "soul",
+        "indie rock",
+        "Mellow",
+        "electronica",
+        "80s",
+        "folk",
+        "90s",
+        "chill",
+        "instrumental",
+        "punk",
+        "oldies",
+        "blues",
+        "hard rock",
+        "ambient",
+        "acoustic",
+        "experimental",
+        "female vocalist",
+        "guitar",
+        "Hip-Hop",
+        "70s",
+        "party",
+        "country",
+        "easy listening",
+        "sexy",
+        "catchy",
+        "funk",
+        "electro",
+        "heavy metal",
+        "Progressive rock",
+        "60s",
+        "rnb",
+        "indie pop",
+        "sad",
+        "House",
+        "happy"
+      ]
+    },
+    {
+      "filename": "msd-musicnn-1.onnx",
+      "url": "https://essentia.upf.edu/models/feature-extractors/musicnn/msd-musicnn-1.onnx",
+      "sha256": "49668ffec47e52e94b96f45930bb46a28a1368d4bdfb5c05378fa834aca616e1",
+      "bytes": 3168334
+    }
+  ]
+}

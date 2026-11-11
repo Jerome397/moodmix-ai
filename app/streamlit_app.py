@@ -38,12 +38,13 @@ if page == "Home":
 elif page == "Music Analysis":
     st.header("Understand your audio")
     st.caption("MP3/WAV · 3–120 seconds · up to 20 MiB · mono/stereo · 8–96 kHz")
-    st.info("Analysis runs locally. Mood and genre classification are not implemented yet; no audio is sent to Gemini.")
+    st.info("Analysis and pretrained mood/genre estimates run locally; no audio is sent to Gemini. Use 15–30 seconds of music for a more useful estimate.")
     upload = st.file_uploader("Choose an audio excerpt", type=["mp3", "wav"])
+    include_models = st.checkbox("Estimate mood and genre locally", value=True)
     if upload is not None:
         import hashlib
         raw = upload.getvalue()
-        identity = hashlib.sha256(raw).hexdigest()
+        identity = hashlib.sha256(raw + upload.name.encode() + str(include_models).encode()).hexdigest()
         if st.session_state.get("audio_identity") != identity:
             st.session_state.pop("audio_analysis", None)
         st.audio(raw, format="audio/mpeg" if upload.name.lower().endswith(".mp3") else "audio/wav")
@@ -54,7 +55,7 @@ elif page == "Music Analysis":
             else:
                 try:
                     with st.spinner("Measuring audio features… First use may take longer while signal-processing functions initialize."):
-                        response = httpx.post(api_url + "/audio/analyze", files={"file": (upload.name, raw, upload.type)}, timeout=180)
+                        response = httpx.post(api_url + "/audio/analyze", files={"file": (upload.name, raw, upload.type)}, data={"include_models": str(include_models).lower()}, timeout=180)
                         response.raise_for_status()
                         st.session_state["audio_analysis"] = response.json()
                         st.session_state["audio_identity"] = identity
@@ -76,6 +77,17 @@ elif page == "Music Analysis":
             st.subheader("Signal level over time")
             st.line_chart(pd.DataFrame(analysis["rms_timeline"]).set_index("time_seconds"), x_label="Time (s)", y_label="RMS amplitude")
             st.dataframe(pd.DataFrame({"Feature": ["Spectral centroid (Hz)", "Spectral bandwidth (Hz)", "85% spectral rolloff (Hz)", "Zero-crossing rate", "Detected beats", "Mood", "Genre"], "Value": [str(round(analysis["spectral_centroid_hz"], 1)), str(round(analysis["spectral_bandwidth_hz"], 1)), str(round(analysis["spectral_rolloff_hz"], 1)), str(round(analysis["zero_crossing_rate"], 4)), str(analysis["beat_count"]), analysis["mood"], analysis["genre"]]}), hide_index=True)
+            if prediction := analysis.get("music_model"):
+                st.subheader("Pretrained music estimates")
+                st.caption(f"{prediction['model']} · {prediction['status']}")
+                for warning in prediction["warnings"]:
+                    st.warning(warning)
+                if prediction["status"] == "ok":
+                    st.write(f"**Mood cues:** {prediction['mood']}")
+                    st.write(f"**Estimated genre:** {prediction['genre']}")
+                    st.bar_chart(pd.DataFrame(prediction["mood_scores"]).set_index("label"), y_label="Positive-class model score (not confidence)")
+                    st.dataframe(pd.DataFrame(prediction["genre_scores"][:3]), hide_index=True)
+                    st.caption(f"{prediction['patches_analyzed']} sampled ~3-second patches. Mood heads are independent; genre is limited to nine training classes. Scores are not calibrated confidence.")
             st.download_button("Download analysis JSON", data=__import__("json").dumps(analysis, indent=2), file_name="moodmix-analysis.json", mime="application/json")
 elif page == "Evaluation":
     st.info("No comparative experiments have been recorded yet. No model-quality claims are available.")

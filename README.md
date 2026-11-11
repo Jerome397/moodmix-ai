@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 48 tests; live real-catalog baseline generation and both server health endpoints were also checked. Gemini inference is verified on a live smoke request with labelled constraint repair; MP3/WAV signal analysis is implemented and verified on generated audio fixtures; neural mood classification remains upcoming.
+For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 54 tests; live real-catalog baseline generation and both server health endpoints were also checked. Gemini inference is verified on a live smoke request with labelled constraint repair; MP3/WAV signal analysis is implemented and verified on generated audio fixtures; local pretrained mood/genre inference is implemented; its accuracy is not yet evaluated on our project dataset.
 
 In a second terminal at the project root:
 
@@ -45,7 +45,15 @@ Official documentation: https://ai.google.dev/api/generate-content and https://a
 
 Open **Music Analysis**, upload an MP3/WAV excerpt (3–120 seconds, up to 20 MiB), then click **Analyze audio**. Playback, estimated BPM, RMS signal level, spectral features, waveform envelope, RMS timeline and JSON export are available. The first analysis may initialize compiled signal routines and take longer.
 
-The analysis runs locally via `POST /audio/analyze`; no audio is sent to Gemini. Mood and genre are explicitly **not estimated** yet. Upload features are not connected to recommendation retrieval at this milestone: catalog Echo Nest energy is not interchangeable with RMS. See `docs/audio-analysis.md` for formulas, privacy, format limits and test methodology.
+The analysis runs locally via `POST /audio/analyze`; no audio is sent to Gemini. Enable **Estimate mood and genre locally** for pretrained MusiCNN mood attributes and nine-class genre estimates. At least six seconds is required; 15–30 seconds is preferable. Model scores are not calibrated confidence. Upload features are not connected to recommendation retrieval at this milestone: catalog Echo Nest energy is not interchangeable with RMS. See `docs/audio-analysis.md` for signal formulas and limits, and `docs/audio-models.md` for neural-model setup, licenses and interpretation.
+
+Install local model assets after dependencies:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/download_audio_models.py
+```
+
+Weights remain outside Git; checksum-pinned files total about 4 MB. Inference uses CPU ONNX Runtime and never sends recordings to Gemini.
 
 ## How it works
 
@@ -62,7 +70,7 @@ Streamlit → FastAPI → catalog validation → feature-distance retrieval → 
 
 0. Environment, configuration and tests.
 1. Text-based vertical slice and licensed real catalog (current); verify one authorized live model call next.
-2. Audio upload/validation and librosa signal features (current); pretrained mood model next.
+2. Audio upload/validation, signal features, and local pretrained mood/genre estimates (current).
 3. Match audio and catalog feature definitions and normalization.
 4. Improve prompts and planning using observed failures.
 5. Integrate and polish the complete audio flow.

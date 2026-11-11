@@ -1,5 +1,14 @@
 # Initial setup verification
 
+## Local neural music milestone: 2026-11-11
+
+- Downloaded and checksum-pinned official MTG MusiCNN encoder and four mood plus one genre head, running locally through CPU ONNX Runtime. Weights are ignored by Git; setup script and manifest are included.
+- Added optional mood/genre inference to the upload endpoint and UI; independent mood scores and top genre alternatives are explicitly uncalibrated estimates. Missing files, silence and short excerpts retain usable signal results.
+- **54 offline tests passed in 10.95 seconds** on final verification; dependency check passed.
+- Official models also ran on the first 30 seconds of the licensed Kevin MacLeod/librosa Vibe Ace example; output and measured processing time are in `evaluation/audio-model-smoke.json`. This is an integration check, not an accuracy benchmark.
+- No Gemini calls, billing changes or uploads to external inference services occurred. Upload-to-recommendation integration remains upcoming.
+- Live Streamlit -> HTTP backend -> official local ONNX weights verification passed on the licensed 30-second music excerpt, returning four mood scores and nine genre scores. Model status reports installed; frontend health passed.
+
 ## Audio signal milestone: 2026-11-11
 
 - Added local MP3/WAV upload endpoint and Streamlit playback/analysis page, with input size, decoded format, sample rate, channel and duration validation.

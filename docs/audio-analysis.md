@@ -1,6 +1,6 @@
 # Audio signal analysis: Phase 2, first milestone
 
-The Music Analysis page sends an MP3/WAV excerpt to the local FastAPI endpoint `POST /audio/analyze` as multipart field `file`. Analysis does not call Gemini or download neural model weights. Mood and genre return `not estimated` until the separate pretrained-model milestone.
+The Music Analysis page sends an MP3/WAV excerpt to the local FastAPI endpoint `POST /audio/analyze` as multipart field `file`. Analysis does not call Gemini or download neural model weights. Optional local pretrained inference is now available via multipart `include_models=true`; see `docs/audio-models.md`. Without that option, mood/genre remain `not estimated`.
 
 ## Input limits
 

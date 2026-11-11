@@ -1,6 +1,6 @@
 """Bounded local audio decoding and documented signal descriptors.
 
-No neural mood/genre inference and no external API calls occur in this module.
+Optional neural mood/genre inference runs locally; no external API calls occur.
 """
 from io import BytesIO
 from pathlib import Path
@@ -10,6 +10,7 @@ import numpy as np
 import soundfile as sf
 from pydantic import Field
 from backend.schemas import StrictModel
+from backend.music_model import MusicPrediction, predict_music
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 MIN_DURATION_SECONDS = 3
@@ -41,12 +42,13 @@ class AudioAnalysis(StrictModel):
     is_silent: bool
     mood: str = "not estimated"
     genre: str = "not estimated"
+    music_model: MusicPrediction | None = None
     warnings: list[str]
     waveform: list[dict[str, float]]
     rms_timeline: list[dict[str, float]]
 
 
-def analyze_audio(content: bytes, filename: str) -> AudioAnalysis:
+def analyze_audio(content: bytes, filename: str, include_models: bool = False) -> AudioAnalysis:
     """Validate and analyze a 3–120 second MP3/WAV without saving input audio."""
     suffix = Path(filename).suffix.lower()
     if suffix not in {".mp3", ".wav"}:
@@ -114,9 +116,11 @@ def analyze_audio(content: bytes, filename: str) -> AudioAnalysis:
         time = float((start + end) / 2 / ANALYSIS_SAMPLE_RATE)
         waveform.append({"time_seconds": time, "minimum": float(chunk.min()), "maximum": float(chunk.max())})
         timeline.append({"time_seconds": time, "rms_amplitude": float(np.sqrt(np.mean(chunk.astype(np.float64) ** 2)))})
+    prediction = predict_music(mono, sr, silent) if include_models else None
     return AudioAnalysis(duration_seconds=len(samples) / sr, source_sample_rate=sr,
         analysis_sample_rate=ANALYSIS_SAMPLE_RATE, channels=channels, decoded_format="MP3" if suffix == ".mp3" else "WAV",
         bpm=bpm, beat_count=beat_count, rms_amplitude=rms, rms_dbfs=20 * float(np.log10(rms)) if rms > 0 else None,
         peak_amplitude=peak, spectral_centroid_hz=centroid, spectral_bandwidth_hz=bandwidth,
         spectral_rolloff_hz=rolloff, zero_crossing_rate=crossings, is_silent=silent,
-        warnings=warnings, waveform=waveform, rms_timeline=timeline)
+        mood=prediction.mood if prediction else "not estimated", genre=prediction.genre if prediction else "not estimated",
+        music_model=prediction, warnings=warnings, waveform=waveform, rms_timeline=timeline)

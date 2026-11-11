@@ -1,0 +1,81 @@
+{
+  "purpose": "Real-music local inference smoke check, not an accuracy evaluation",
+  "sample": "First 30 seconds of Vibe Ace by Kevin MacLeod",
+  "source": "https://librosa.org/data/audio/Kevin_MacLeod_-_Vibe_Ace.ogg",
+  "source_sha256": "6c23aed3dd5aa57f2b1652ecab68d15d9b82ad257f54e639eb2880ca09bc118a",
+  "elapsed_seconds": 8.544,
+  "neural_result": {
+    "status": "ok",
+    "model": "MTG MSD MusiCNN + mood heads + genre Dortmund",
+    "mood": "relaxed",
+    "genre": "jazz",
+    "mood_scores": [
+      {
+        "label": "happy",
+        "score": 0.04046709090471268
+      },
+      {
+        "label": "sad",
+        "score": 0.362429678440094
+      },
+      {
+        "label": "relaxed",
+        "score": 0.9993779063224792
+      },
+      {
+        "label": "aggressive",
+        "score": 0.00011702855408657342
+      }
+    ],
+    "genre_scores": [
+      {
+        "label": "jazz",
+        "score": 0.920793890953064
+      },
+      {
+        "label": "electronic",
+        "score": 0.0506121926009655
+      },
+      {
+        "label": "pop",
+        "score": 0.00820010807365179
+      },
+      {
+        "label": "blues",
+        "score": 0.0049490295350551605
+      },
+      {
+        "label": "raphiphop",
+        "score": 0.0041195098310709
+      },
+      {
+        "label": "rock",
+        "score": 0.0038116401992738247
+      },
+      {
+        "label": "funksoulrnb",
+        "score": 0.0029536026995629072
+      },
+      {
+        "label": "folkcountr",
+        "score": 0.002445624442771077
+      },
+      {
+        "label": "alternative",
+        "score": 0.002114338567480445
+      }
+    ],
+    "patches_analyzed": 10,
+    "warnings": [
+      "Experimental music estimates: model scores are not calibrated confidence or ground truth.",
+      "Mood attributes are independent and may overlap; 0.5 is the binary decision threshold.",
+      "Genre is selected from nine training classes; speech, noise and missing genres can still receive a label."
+    ]
+  },
+  "limitations": [
+    "No ground-truth mood/genre benchmark used.",
+    "Independent mood scores are not calibrated confidence.",
+    "Nine-class genre model omits styles including classical.",
+    "NumPy/librosa preprocessing port is not claimed bit-identical to Essentia on all platforms."
+  ]
+}

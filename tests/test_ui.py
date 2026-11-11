@@ -36,7 +36,7 @@ def test_audio_page_upload_and_measurements(monkeypatch):
     monkeypatch.setattr(st, "file_uploader", lambda *args, **kwargs: upload)
     client = TestClient(app)
     monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/llm/status" if url.endswith("/llm/status") else "/health"))
-    monkeypatch.setattr(httpx, "post", lambda url, files, timeout: client.post("/audio/analyze", files=files))
+    monkeypatch.setattr(httpx, "post", lambda url, files, timeout, **kwargs: client.post("/audio/analyze", files=files, data=kwargs.get("data")))
     ui = AppTest.from_file(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py", default_timeout=120).run()
     ui.sidebar.radio[0].set_value("Music Analysis").run()
     ui.button[0].click().run()
