@@ -40,6 +40,28 @@ class ProviderFailure(Exception):
     """A sanitized provider failure safe to display."""
 
 
+def gemini_schema() -> dict:
+    """Expand local references and use the portable JSON-schema subset.
+
+    Pydantic still enforces all string/list limits after generation. Some Gemini
+    endpoints reject the otherwise valid reference/constraint-rich schema.
+    """
+    schema = Plan.model_json_schema()
+    definitions = schema.get("$defs", {})
+
+    def portable(value):
+        if isinstance(value, list):
+            return [portable(item) for item in value]
+        if not isinstance(value, dict):
+            return value
+        if "$ref" in value:
+            return portable(definitions[value["$ref"].rsplit("/", 1)[-1]])
+        return {key: portable(item) for key, item in value.items()
+                if key not in {"$defs", "minLength", "maxLength", "minItems", "maxItems"}}
+
+    return portable(schema)
+
+
 def gemini_plan(settings: Settings, payload: dict, correction: str) -> Plan:
     """Call Gemini REST with a JSON schema; keep the key out of URLs."""
     url = 'https://generativelanguage.googleapis.com/v1beta/models/' + quote(settings.gemini_model, safe='') + ':generateContent'
@@ -47,7 +69,7 @@ def gemini_plan(settings: Settings, payload: dict, correction: str) -> Plan:
         'systemInstruction': {'parts': [{'text': SYSTEM_PROMPT}]},
         'contents': [{'role': 'user', 'parts': [{'text': json.dumps(payload) + correction}]}],
         'generationConfig': {'responseMimeType': 'application/json',
-                             'responseJsonSchema': Plan.model_json_schema(), 'maxOutputTokens': 4000},
+                             'responseJsonSchema': gemini_schema(), 'maxOutputTokens': 4000},
     }
     # No transport retries, tools, grounding or automatic provider switching.
     try:
@@ -77,6 +99,23 @@ def gemini_plan(settings: Settings, payload: dict, correction: str) -> Plan:
         raise ValueError('Gemini returned an invalid response envelope.') from exc
 
 
+def repair_constraints(plan: Plan, candidates: list[Track], request: PlaylistRequest) -> Plan:
+    """Fit only the model's proposed tracks; never substitute baseline candidates.
+
+    Preserve model explanations and its order for steady progression. Unknown or
+    duplicate IDs cannot be repaired. The final plan must pass original constraints.
+    """
+    lookup = {t.track_id: t for t in candidates}
+    ids = [item.track_id for item in plan.tracks]
+    if len(set(ids)) != len(ids) or any(i not in lookup for i in ids):
+        raise ValueError('Unknown or duplicate IDs cannot be repaired.')
+    fitted = baseline([lookup[i] for i in ids], request)
+    explanations = {item.track_id: item for item in plan.tracks}
+    repaired = Plan(title=plan.title, tracks=[explanations[item.track_id] for item in fitted.tracks])
+    validate_plan(repaired, candidates, request)
+    return repaired
+
+
 def generate(candidates: list[Track], request: PlaylistRequest) -> tuple[Plan, str, list[str]]:
     if request.mode == 'baseline':
         return baseline(candidates, request), 'baseline', []
@@ -88,11 +127,14 @@ def generate(candidates: list[Track], request: PlaylistRequest) -> tuple[Plan, s
     fields = {'track_id', 'title', 'artist', 'duration_seconds', 'genre', 'bpm', 'energy', 'mood'}
     payload = {'request': request.model_dump(),
                'candidates': [{k: v for k, v in t.model_dump().items() if k in fields} for t in candidates],
-               'feasible_duration_seconds': sum(lookup[item.track_id].duration_seconds for item in baseline(candidates, request).tracks)}
+               'feasible_duration_seconds': sum(lookup[item.track_id].duration_seconds for item in baseline(candidates, request).tracks),
+               'maximum_duration_seconds': request.duration_minutes * 60}
+    payload['minimum_duration_seconds'] = max(1, payload['feasible_duration_seconds'] - 60)
     correction = ''
     warning = 'LLM output failed validation.'
     # Maximum two calls. Access/quota/network errors fall back immediately.
     for attempt in range(2):
+        plan = None
         try:
             if provider == 'gemini':
                 plan = gemini_plan(settings, payload, correction)
@@ -104,10 +146,18 @@ def generate(candidates: list[Track], request: PlaylistRequest) -> tuple[Plan, s
                     plan = response.output_parsed
                 if plan is None:
                     raise ValueError('No structured playlist returned.')
-            validate_plan(plan, candidates, request)
+            try:
+                validate_plan(plan, candidates, request)
+            except ValueError:
+                repaired = repair_constraints(plan, candidates, request)
+                return repaired, 'llm_repaired', ['Backend fitted duration/energy constraints using only the LLM-proposed tracks. Transition explanations may refer to the original proposed sequence.']
             return plan, 'llm', []
-        except ValueError:
-            correction = '\nPrevious output was invalid. Check IDs, duplicates, duration tolerance, energy order and schema; return a complete corrected plan.'
+        except ValueError as exc:
+            payload['previous_plan'] = plan.model_dump() if plan is not None else None
+            payload['validation_feedback'] = str(exc)[:800]
+            if plan is not None and all(item.track_id in lookup for item in plan.tracks):
+                payload['previous_duration_seconds'] = sum(lookup[item.track_id].duration_seconds for item in plan.tracks)
+            correction = '\nPrevious output was invalid. Use validation_feedback and previous_plan to correct it. Sum duration_seconds explicitly and stay between minimum_duration_seconds and maximum_duration_seconds. Check IDs and energy order; return the corrected complete plan.'
         except ProviderFailure as exc:
             warning = str(exc)
             break

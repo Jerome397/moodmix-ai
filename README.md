@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 28 tests; live real-catalog baseline generation and both server health endpoints were also checked. Hosted inference and real audio remain unverified.
+For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 33 tests; live real-catalog baseline generation and both server health endpoints were also checked. Gemini inference is verified on a live smoke request with labelled constraint repair; real audio remains unimplemented.
 
 In a second terminal at the project root:
 
@@ -39,7 +39,7 @@ Keep paid billing disabled in your Google project. Free-tier quotas and project 
 
 The backend sends a Pydantic JSON schema through Gemini's REST API using the existing `httpx` dependency, then validates both JSON and playlist constraints. Status is available at `/llm/status`, exposing provider/model/readiness only. Optional OpenAI support remains available with `LLM_PROVIDER=openai`, `OPENAI_API_KEY` and `OPENAI_MODEL`. The sidebar displays the selected provider. Never paste keys into chat or commit them.
 
-Official documentation: https://ai.google.dev/api/generate-content and https://ai.google.dev/gemini-api/docs/structured-output . Free-tier model pricing: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . Hosted inference remains unverified until a real key is configured and a live request succeeds.
+Official documentation: https://ai.google.dev/api/generate-content and https://ai.google.dev/gemini-api/docs/structured-output . Free-tier model pricing: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . A live Gemini smoke request succeeded with `llm_repaired`; see `evaluation/gemini-live-smoke.json`. This single request establishes connectivity and a validated repaired output, not recommendation quality or reliability across requests.
 
 ## How it works
 
@@ -49,6 +49,7 @@ Streamlit → FastAPI → catalog validation → feature-distance retrieval → 
 - The baseline uses a 0/1 duration knapsack, preferring earlier similarity-ranked candidates on ties, then sorts energy when requested. Duration coverage is its primary optimization; it is a simple comparison baseline, not an optimal music recommender. Free text is not interpreted by the baseline.
 - The Transformer receives candidate metadata plus the complete musical request and decides track membership, order, title, and explanations. It does not merely annotate a preselected playlist.
 - Backend code rejects unknown/duplicate IDs, duration overflow, duration more than 60 seconds below the best feasible candidate fit, and nonmonotonic requested energy progression. Titles, artists and durations come from the catalog, never from generated text.
+- If an otherwise valid model proposal violates duration or energy order, deterministic repair may fit only the model-proposed tracks. It never introduces baseline candidates, and the result is labelled `llm_repaired`. Unknown/duplicate IDs remain rejected. Transition explanations may refer to a prior ordering.
 - At most two provider requests occur per generation (transport/SDK retries disabled). Access, quota and network failures fall back immediately; invalid output gets one correction attempt. Failure uses a clearly labelled deterministic fallback. Natural-language instruction satisfaction remains a soft goal for later human evaluation.
 
 ## Milestones

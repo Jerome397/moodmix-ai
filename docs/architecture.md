@@ -19,7 +19,7 @@ These are project design choices informed by the course topics, not claimed inst
 
 ## Current boundaries
 
-A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. No audio analysis, pretrained audio classifier, experimental comparison, or live provider verification is complete. Synthetic fixtures test software behavior only. Tests substituting a fake SDK or HTTP transport verify retries and validation, not Transformer quality or provider access.
+A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. No audio analysis, pretrained audio classifier, experimental comparison, is complete; Gemini connectivity is verified on a live smoke request. Synthetic fixtures test software behavior only. Tests substituting a fake SDK or HTTP transport verify retries and validation, not Transformer quality or provider access.
 
 The real catalog has unknown mood; no mood penalty is applied during baseline retrieval. The UI obtains genre options and provenance from the backend health response. Metadata is historical; source links refer to the dataset when a track-specific URL is unavailable. No recordings are redistributed.
 
@@ -27,4 +27,6 @@ LLM network work runs in a synchronous FastAPI handler, with a 30-second provide
 
 ## Provider adapter
 
-Gemini is the default. It uses the existing HTTP client with a key in the `x-goog-api-key` header, not URL parameters. A JSON schema derived from `Plan` constrains response structure; backend validation independently enforces music constraints. Incomplete/blocked responses and invalid plans never count as successful LLM generation. Only two calls are allowed and quotas/access failures immediately trigger a labelled baseline fallback. No free-text provider errors or response bodies are exposed. OpenAI remains an explicit alternative, never an automatic fallback.
+Gemini is the default. It uses the existing HTTP client with a key in the `x-goog-api-key` header, not URL parameters. An inlined portable JSON schema derived from `Plan` constrains response structure; complete string/list limits are checked by Pydantic afterward; backend validation independently enforces music constraints. Incomplete/blocked responses and invalid plans never count as successful LLM generation. Only two calls are allowed and quotas/access failures immediately trigger a labelled baseline fallback. No free-text provider errors or response bodies are exposed. OpenAI remains an explicit alternative, never an automatic fallback.
+
+Constraint repair can select a duration-fitting subset only from valid, unique model-proposed IDs and enforce requested energy order. It retains model title/explanations, revalidates against the original candidate pool, and reports `llm_repaired`. Repair failure triggers the bounded correction attempt or baseline fallback. Record raw validation failure and repair separately in future comparative evaluation. A single live smoke test does not establish broad reliability, semantic quality, or billing-tier status.

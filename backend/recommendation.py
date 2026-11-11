@@ -3,9 +3,10 @@ from backend.schemas import Track, PlaylistRequest, Plan, PlannedTrack
 
 
 def retrieve(tracks: list[Track], request: PlaylistRequest) -> list[Track]:
-    eligible = [t for t in tracks if request.genre.lower() == "any" or t.genre.lower() == request.genre.lower()]
+    eligible = [t for t in tracks if t.duration_seconds <= request.duration_minutes * 60
+                and (request.genre.lower() == "any" or t.genre.lower() == request.genre.lower())]
     if not eligible:
-        raise ValueError("No tracks match the requested genre.")
+        raise ValueError("No tracks match the requested genre and duration cap.")
     def distance(track: Track) -> float:
         # BPM is scaled by 180 BPM; energy already lies in [0, 1].
         mood_penalty = 0.25 * (track.mood.lower() != request.mood.lower()) if track.mood != "unknown" and request.mood != "any" else 0

@@ -1,0 +1,47 @@
+{
+  "method": "llm_repaired",
+  "warnings": [
+    "Backend fitted duration/energy constraints using only the LLM-proposed tracks. Transition explanations may refer to the original proposed sequence."
+  ],
+  "title": "Rising Electronic Playlist",
+  "latency_seconds": 1.77,
+  "duration_seconds": 556,
+  "request": {
+    "mood": "relaxed",
+    "duration_minutes": 10,
+    "genre": "electronic",
+    "energy": 0.5,
+    "bpm": 110,
+    "progression": "rising",
+    "instructions": "Start gently and build toward an energetic finish. Explain using supplied metadata only.",
+    "mode": "llm"
+  },
+  "tracks": [
+    {
+      "track_id": "fma-000414",
+      "title": "John And Mary - The Restaurant",
+      "artist": "Borful Tang",
+      "energy": 0.3929718001,
+      "duration_seconds": 230,
+      "explanation": "Starting the playlist gently with a duration of 230 seconds and an energy level of 0.39, matching the beginning of the rising progression."
+    },
+    {
+      "track_id": "fma-000387",
+      "title": "I wish I wish",
+      "artist": "Blanketship",
+      "energy": 0.5527492537,
+      "duration_seconds": 326,
+      "explanation": "Continuing the rising energy trend with a track duration of 326 seconds and an energy value of 0.55."
+    }
+  ],
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "verified_on": "2026-11-11",
+  "purpose": "Single live integration smoke check, not a benchmark",
+  "billing_tier_verified": false,
+  "limitations": [
+    "Earlier live attempts failed request or playlist validation.",
+    "This result required deterministic constraint repair.",
+    "No comparative recommendation-quality claim is supported."
+  ]
+}

@@ -1,5 +1,16 @@
 # Initial setup verification
 
+## Live Gemini verification: 2026-11-11
+
+- Private key detected without displaying it. Read-only model discovery confirmed access to the configured Gemini model.
+- Earlier live attempts exposed request-schema incompatibility and duration-planning failures. The wire schema now inlines references and leaves full length limits to local Pydantic validation.
+- Retrieval excludes individually overlong tracks. Correction requests include failed plan, duration total and validation feedback.
+- Constraint repair fits only LLM-proposed tracks, cannot repair invented/duplicate IDs, and is explicitly labelled `llm_repaired`.
+- Live electronic rising-energy request returned a validated 556-second playlist for a 600-second cap, with Gemini-generated title and explanations, using constraint repair. Recorded in `evaluation/gemini-live-smoke.json`. This is one smoke check, not a benchmark or a billing-tier verification.
+- **33 offline regression tests passed in 5.51 seconds.** The private key remains ignored by Git. Google billing settings were not changed.
+
+Earlier milestone entries below are historical.
+
 ## Gemini adapter milestone: verified 2026-11-11
 
 - Gemini is the default provider; Google AI Studio free-tier setup documented in `docs/gemini-setup.md`.

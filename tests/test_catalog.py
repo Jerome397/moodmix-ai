@@ -20,6 +20,12 @@ def test_real_catalog_provenance_and_planning():
         assert all(t.genre == genre for t in selected)
 
 
+def test_retrieval_excludes_tracks_longer_than_entire_playlist():
+    request = PlaylistRequest(duration_minutes=3)
+    candidates = retrieve(load_catalog(), request)
+    assert candidates and all(t.duration_seconds <= 180 for t in candidates)
+
+
 def test_import_rejects_unverified_archive(tmp_path):
     archive = tmp_path / "bad.zip"
     archive.write_bytes(b"not an official archive")
