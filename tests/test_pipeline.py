@@ -51,7 +51,7 @@ def test_api_uses_canonical_metadata():
 
 def test_missing_credentials_is_labelled_fallback(monkeypatch):
     from backend import generation
-    monkeypatch.setattr(generation, "Settings", lambda: type("Config", (), {"openai_api_key": "", "openai_model": ""})())
+    monkeypatch.setattr(generation, "Settings", lambda: type("Config", (), {"llm_provider": "openai", "openai_api_key": "", "openai_model": ""})())
     _, method, warnings = generate(load_catalog(), PlaylistRequest(mode="llm"))
     assert method == "fallback" and warnings
 
@@ -63,10 +63,14 @@ def test_invalid_llm_output_retries_then_falls_back(monkeypatch):
         responses = None
         def __init__(self, **kwargs):
             self.responses = self
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
         def parse(self, **kwargs):
             calls.append(1)
             return type("Response", (), {"output_parsed": Plan(title="Bad", tracks=[PlannedTrack(track_id="invented", explanation="bad")])})()
-    monkeypatch.setattr(generation, "Settings", lambda: type("Config", (), {"openai_api_key": "test", "openai_model": "test"})())
+    monkeypatch.setattr(generation, "Settings", lambda: type("Config", (), {"llm_provider": "openai", "openai_api_key": "test", "openai_model": "test"})())
     monkeypatch.setattr(generation, "OpenAI", FakeClient)
     _, method, warnings = generate(load_catalog(), PlaylistRequest(mode="llm"))
     assert len(calls) == 2 and method == "fallback" and warnings
@@ -92,9 +96,13 @@ def test_valid_llm_plan_is_preserved(monkeypatch):
     class FakeClient:
         def __init__(self, **kwargs):
             self.responses = self
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
         def parse(self, **kwargs):
             return type("Response", (), {"output_parsed": plan})()
-    monkeypatch.setattr(generation, "Settings", lambda: type("Config", (), {"openai_api_key": "test", "openai_model": "test"})())
+    monkeypatch.setattr(generation, "Settings", lambda: type("Config", (), {"llm_provider": "openai", "openai_api_key": "test", "openai_model": "test"})())
     monkeypatch.setattr(generation, "OpenAI", FakeClient)
     result, method, warnings = generate(catalog, request)
     assert result.title == "Model-selected title" and method == "llm" and not warnings

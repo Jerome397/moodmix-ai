@@ -12,7 +12,7 @@ def test_streamlit_baseline_flow(monkeypatch):
     monkeypatch.setattr("backend.main.load_catalog", lambda: load_catalog(fixture))
     client = TestClient(app)
     monkeypatch.setattr(httpx, "post", lambda url, json, timeout: client.post("/playlist", json=json))
-    monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/health"))
+    monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/llm/status" if url.endswith("/llm/status") else "/health"))
     ui = AppTest.from_file(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py", default_timeout=20).run()
     ui.sidebar.radio[0].set_value("Playlist Generator").run()
     ui.button[0].click().run()

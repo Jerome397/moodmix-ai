@@ -2,7 +2,7 @@
 from time import perf_counter
 from fastapi import FastAPI, HTTPException
 from backend.catalog import load_catalog, catalog_info
-from backend.generation import generate
+from backend.generation import generate, llm_status
 from backend.recommendation import retrieve, validate_plan
 from backend.schemas import PlaylistRequest
 
@@ -12,6 +12,11 @@ app = FastAPI(title="MoodMix AI", version="0.1.0")
 @app.get("/health")
 def health():
     return {"status": "ok", **catalog_info(load_catalog())}
+
+
+@app.get("/llm/status")
+def model_status():
+    return llm_status()
 
 
 @app.post("/playlist")

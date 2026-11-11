@@ -1,5 +1,12 @@
 # Initial setup verification
 
+## Gemini adapter milestone: verified 2026-11-11
+
+- Gemini is the default provider; Google AI Studio free-tier setup documented in `docs/gemini-setup.md`.
+- Uses existing HTTP dependency, JSON-schema structured output and Pydantic/backend constraints. API key is sent in a header and never returned by the status endpoint.
+- **28 offline tests passed in 5.44 seconds**, including Gemini success, incomplete output, invented IDs, invalid JSON, quota/access/model failures, retry bounds and secret-safe error messages.
+- No live Google call or account billing verification has been performed. Private key setup remains required. Configured readiness does not prove live success or free-tier eligibility.
+
 ## Real catalog milestone: verified 2026-11-11
 
 - Official FMA metadata archive downloaded; SHA-1 matches `f0df49ffe5f2a6008d7dc83c6915b31835dfe733`.

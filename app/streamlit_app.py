@@ -18,6 +18,15 @@ except (httpx.HTTPError, ValueError):
     st.stop()
 st.sidebar.info(f"{catalog['catalog_tracks']} tracks · {catalog['catalog_kind']}")
 st.sidebar.caption("Metadata only: recordings are not hosted in this application.")
+try:
+    status_response = httpx.get(api_url + "/llm/status", timeout=10)
+    status_response.raise_for_status()
+    llm = status_response.json()
+    st.sidebar.caption(f"LLM: {llm['provider']} · {llm['model']}")
+    if not llm["configured"]:
+        st.sidebar.warning("Add your private Gemini API key to .env to enable live planning.")
+except (httpx.HTTPError, ValueError, KeyError):
+    st.sidebar.caption("LLM status unavailable; restart the backend after configuration changes.")
 previous = st.session_state.get("playlist")
 if previous and previous.get("catalog_kind") != catalog["catalog_kind"]:
     st.session_state.pop("playlist", None)
@@ -44,7 +53,7 @@ else:
         bpm = right.slider("Target BPM", 40, 220, 110)
         instructions = st.text_area("Musical instructions", placeholder="Start relaxed, then build toward a lively finish.")
         mode = st.radio("Planner", ["baseline", "llm"], horizontal=True)
-        st.caption("LLM mode sends preferences and candidate metadata to OpenAI and may incur API charges. Baseline uses the explicit controls; it does not interpret free text.")
+        st.caption("LLM mode sends preferences and candidate metadata to the configured provider (Gemini by default). Keep the Google project on the free tier; quotas apply. Baseline uses explicit controls and does not interpret free text.")
         submitted = st.form_submit_button("Generate playlist", type="primary")
     if submitted:
         try:

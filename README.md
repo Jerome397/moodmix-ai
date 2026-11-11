@@ -1,6 +1,6 @@
 # MoodMix AI
 
-Phase 1: a local text-to-playlist prototype with content-based retrieval, an optional OpenAI Transformer planner, backend validation, and a Streamlit interface.
+Phase 1: a local text-to-playlist prototype with content-based retrieval, a configurable Gemini/OpenAI Transformer planner, backend validation, and a Streamlit interface.
 
 The default catalog contains **240 real FMA tracks**, with published artist/title/duration/genre metadata and Echo Nest tempo/energy attributes. Mood is explicitly unknown. No recordings or audio playback are bundled. No GenAI superiority claims have been established. The fictional development catalog remains only for isolated tests. See `data/ATTRIBUTION.md` and `data/catalog.manifest.json` for licensing, provenance, and selection rules.
 
@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 15 tests; live real-catalog baseline generation and both server health endpoints were also checked. Hosted inference and real audio remain unverified.
+For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 28 tests; live real-catalog baseline generation and both server health endpoints were also checked. Hosted inference and real audio remain unverified.
 
 In a second terminal at the project root:
 
@@ -27,9 +27,19 @@ Visit http://localhost:8501. API documentation: http://127.0.0.1:8000/docs. Acti
 
 ## Optional LLM mode
 
-Copy `.env.example` to `.env`, then privately set `OPENAI_API_KEY` and `OPENAI_MODEL` to a model available in your account supporting structured outputs. Restart the backend. Never paste keys into chat or commit them. Selecting LLM mode in the application initiates potentially billed API calls; baseline mode is entirely local. No hosted request is made during automated tests.
+Gemini is the default provider. Follow `docs/gemini-setup.md` to create a free-tier Google AI Studio key and place it privately in `.env`:
 
-The SDK uses Pydantic structured output via `responses.parse`: https://developers.openai.com/api/docs/guides/structured-outputs . Model access and billing must be checked in your own account. Credentials are not supplied by this project.
+```dotenv
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=your_private_key
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+
+Keep paid billing disabled in your Google project. Free-tier quotas and project eligibility apply; the app cannot inspect the project's billing tier. No automatic billing upgrade, model switching, search grounding or provider switching is performed. Free-tier request content may be used by Google to improve its products. No hosted request is made during automated tests.
+
+The backend sends a Pydantic JSON schema through Gemini's REST API using the existing `httpx` dependency, then validates both JSON and playlist constraints. Status is available at `/llm/status`, exposing provider/model/readiness only. Optional OpenAI support remains available with `LLM_PROVIDER=openai`, `OPENAI_API_KEY` and `OPENAI_MODEL`. The sidebar displays the selected provider. Never paste keys into chat or commit them.
+
+Official documentation: https://ai.google.dev/api/generate-content and https://ai.google.dev/gemini-api/docs/structured-output . Free-tier model pricing: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . Hosted inference remains unverified until a real key is configured and a live request succeeds.
 
 ## How it works
 
@@ -39,7 +49,7 @@ Streamlit → FastAPI → catalog validation → feature-distance retrieval → 
 - The baseline uses a 0/1 duration knapsack, preferring earlier similarity-ranked candidates on ties, then sorts energy when requested. Duration coverage is its primary optimization; it is a simple comparison baseline, not an optimal music recommender. Free text is not interpreted by the baseline.
 - The Transformer receives candidate metadata plus the complete musical request and decides track membership, order, title, and explanations. It does not merely annotate a preselected playlist.
 - Backend code rejects unknown/duplicate IDs, duration overflow, duration more than 60 seconds below the best feasible candidate fit, and nonmonotonic requested energy progression. Titles, artists and durations come from the catalog, never from generated text.
-- At most two SDK requests occur per generation (SDK retries disabled). Failure uses a clearly labelled deterministic fallback. Natural-language instruction satisfaction remains a soft goal for later human evaluation.
+- At most two provider requests occur per generation (transport/SDK retries disabled). Access, quota and network failures fall back immediately; invalid output gets one correction attempt. Failure uses a clearly labelled deterministic fallback. Natural-language instruction satisfaction remains a soft goal for later human evaluation.
 
 ## Milestones
 
