@@ -19,3 +19,27 @@ def test_streamlit_baseline_flow(monkeypatch):
     assert not ui.exception
     assert len(ui.dataframe) == 2
     assert len(ui.metric) == 3
+
+
+def test_audio_page_upload_and_measurements(monkeypatch):
+    from io import BytesIO
+    from types import SimpleNamespace
+    import httpx
+    import numpy as np
+    import soundfile as sf
+    import streamlit as st
+    buffer = BytesIO()
+    samples = .2 * np.sin(2 * np.pi * 440 * np.arange(22050 * 4) / 22050)
+    sf.write(buffer, samples, 22050, format="WAV")
+    content = buffer.getvalue()
+    upload = SimpleNamespace(name="test.wav", type="audio/wav", getvalue=lambda: content)
+    monkeypatch.setattr(st, "file_uploader", lambda *args, **kwargs: upload)
+    client = TestClient(app)
+    monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/llm/status" if url.endswith("/llm/status") else "/health"))
+    monkeypatch.setattr(httpx, "post", lambda url, files, timeout: client.post("/audio/analyze", files=files))
+    ui = AppTest.from_file(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py", default_timeout=120).run()
+    ui.sidebar.radio[0].set_value("Music Analysis").run()
+    ui.button[0].click().run()
+    assert not ui.exception
+    assert ui.session_state["audio_analysis"]["rms_amplitude"] > .1
+    assert len(ui.metric) == 4 and len(ui.dataframe) == 1

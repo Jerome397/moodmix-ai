@@ -33,10 +33,50 @@ if previous and previous.get("catalog_kind") != catalog["catalog_kind"]:
 if page == "Home":
     st.header("A playlist with a plan")
     st.write("Compare content-based recommendations with a Transformer planner that selects and orders catalog tracks from your instructions.")
-    st.info(f"Current catalog: {catalog['catalog_kind']}. Audio upload and model-based mood understanding come next.")
+    st.info(f"Current catalog: {catalog['catalog_kind']}. Upload an excerpt on Music Analysis to inspect measured audio features.")
     st.write("Choose Playlist Generator to explore real track metadata, published audio features, and source links.")
 elif page == "Music Analysis":
-    st.info("Audio upload and pretrained audio understanding are scheduled for Phase 2.")
+    st.header("Understand your audio")
+    st.caption("MP3/WAV · 3–120 seconds · up to 20 MiB · mono/stereo · 8–96 kHz")
+    st.info("Analysis runs locally. Mood and genre classification are not implemented yet; no audio is sent to Gemini.")
+    upload = st.file_uploader("Choose an audio excerpt", type=["mp3", "wav"])
+    if upload is not None:
+        import hashlib
+        raw = upload.getvalue()
+        identity = hashlib.sha256(raw).hexdigest()
+        if st.session_state.get("audio_identity") != identity:
+            st.session_state.pop("audio_analysis", None)
+        st.audio(raw, format="audio/mpeg" if upload.name.lower().endswith(".mp3") else "audio/wav")
+        if st.button("Analyze audio", type="primary"):
+            st.session_state.pop("audio_analysis", None)
+            if len(raw) > 20 * 1024 * 1024:
+                st.error("Audio must be 20 MiB or smaller.")
+            else:
+                try:
+                    with st.spinner("Measuring audio features… First use may take longer while signal-processing functions initialize."):
+                        response = httpx.post(api_url + "/audio/analyze", files={"file": (upload.name, raw, upload.type)}, timeout=180)
+                        response.raise_for_status()
+                        st.session_state["audio_analysis"] = response.json()
+                        st.session_state["audio_identity"] = identity
+                except httpx.HTTPStatusError as exc:
+                    st.error(f"Audio rejected: {exc.response.json().get('detail', 'Invalid audio')}")
+                except httpx.RequestError:
+                    st.error("Audio analysis could not finish. Check the backend and try a shorter excerpt.")
+        if analysis := st.session_state.get("audio_analysis"):
+            a, b, c, d = st.columns(4)
+            a.metric("Estimated BPM", f"{analysis['bpm']:.1f}" if analysis["bpm"] is not None else "Unavailable")
+            b.metric("RMS amplitude", f"{analysis['rms_amplitude']:.4f}")
+            c.metric("RMS level", f"{analysis['rms_dbfs']:.1f} dBFS" if analysis["rms_dbfs"] is not None else "Silence")
+            d.metric("Duration", f"{analysis['duration_seconds']:.1f} s")
+            st.caption("RMS measures digital signal level, not perceived loudness or the catalog's Echo Nest energy. It is not used as a substitute in recommendations.")
+            for warning in analysis["warnings"]:
+                st.warning(warning)
+            st.subheader("Waveform envelope")
+            st.line_chart(pd.DataFrame(analysis["waveform"]).set_index("time_seconds"), x_label="Time (s)", y_label="Amplitude (full scale)")
+            st.subheader("Signal level over time")
+            st.line_chart(pd.DataFrame(analysis["rms_timeline"]).set_index("time_seconds"), x_label="Time (s)", y_label="RMS amplitude")
+            st.dataframe(pd.DataFrame({"Feature": ["Spectral centroid (Hz)", "Spectral bandwidth (Hz)", "85% spectral rolloff (Hz)", "Zero-crossing rate", "Detected beats", "Mood", "Genre"], "Value": [str(round(analysis["spectral_centroid_hz"], 1)), str(round(analysis["spectral_bandwidth_hz"], 1)), str(round(analysis["spectral_rolloff_hz"], 1)), str(round(analysis["zero_crossing_rate"], 4)), str(analysis["beat_count"]), analysis["mood"], analysis["genre"]]}), hide_index=True)
+            st.download_button("Download analysis JSON", data=__import__("json").dumps(analysis, indent=2), file_name="moodmix-analysis.json", mime="application/json")
 elif page == "Evaluation":
     st.info("No comparative experiments have been recorded yet. No model-quality claims are available.")
 else:

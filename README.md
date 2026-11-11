@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 33 tests; live real-catalog baseline generation and both server health endpoints were also checked. Gemini inference is verified on a live smoke request with labelled constraint repair; real audio remains unimplemented.
+For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 48 tests; live real-catalog baseline generation and both server health endpoints were also checked. Gemini inference is verified on a live smoke request with labelled constraint repair; MP3/WAV signal analysis is implemented and verified on generated audio fixtures; neural mood classification remains upcoming.
 
 In a second terminal at the project root:
 
@@ -41,6 +41,12 @@ The backend sends a Pydantic JSON schema through Gemini's REST API using the exi
 
 Official documentation: https://ai.google.dev/api/generate-content and https://ai.google.dev/gemini-api/docs/structured-output . Free-tier model pricing: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . A live Gemini smoke request succeeded with `llm_repaired`; see `evaluation/gemini-live-smoke.json`. This single request establishes connectivity and a validated repaired output, not recommendation quality or reliability across requests.
 
+## Audio analysis
+
+Open **Music Analysis**, upload an MP3/WAV excerpt (3–120 seconds, up to 20 MiB), then click **Analyze audio**. Playback, estimated BPM, RMS signal level, spectral features, waveform envelope, RMS timeline and JSON export are available. The first analysis may initialize compiled signal routines and take longer.
+
+The analysis runs locally via `POST /audio/analyze`; no audio is sent to Gemini. Mood and genre are explicitly **not estimated** yet. Upload features are not connected to recommendation retrieval at this milestone: catalog Echo Nest energy is not interchangeable with RMS. See `docs/audio-analysis.md` for formulas, privacy, format limits and test methodology.
+
 ## How it works
 
 Streamlit → FastAPI → catalog validation → feature-distance retrieval → baseline or LLM planner → constraint validation → canonical metadata response.
@@ -56,7 +62,7 @@ Streamlit → FastAPI → catalog validation → feature-distance retrieval → 
 
 0. Environment, configuration and tests.
 1. Text-based vertical slice and licensed real catalog (current); verify one authorized live model call next.
-2. Audio validation, librosa features, and a suitable pretrained audio model.
+2. Audio upload/validation and librosa signal features (current); pretrained mood model next.
 3. Match audio and catalog feature definitions and normalization.
 4. Improve prompts and planning using observed failures.
 5. Integrate and polish the complete audio flow.

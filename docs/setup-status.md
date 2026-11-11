@@ -1,5 +1,14 @@
 # Initial setup verification
 
+## Audio signal milestone: 2026-11-11
+
+- Added local MP3/WAV upload endpoint and Streamlit playback/analysis page, with input size, decoded format, sample rate, channel and duration validation.
+- Measures tempo, beat count, RMS/dBFS, peak and spectral descriptors; displays waveform/RMS envelopes and exports JSON. Silence and phase-cancelling stereo have explicit handling.
+- Installed librosa 0.11.0 and SoundFile 0.13.1; dependency consistency check passed and lockfile updated.
+- **48 offline tests passed in 48.95 seconds**, including 440 Hz/RMS checks, 120 BPM pulses, stereo resampling, MP3 roundtrip, invalid/non-finite audio, endpoint validation and Streamlit form-to-backend analysis. The initial run includes compiled routine initialization.
+- Live verification also passed: Streamlit analysis form called the running HTTP endpoint with a generated WAV; measured RMS 0.14142 and centroid 447.96 Hz for a 440 Hz reference tone. MP3 HTTP analysis and Streamlit health passed. No hosted API call occurred.
+- Neural mood/genre prediction and upload-driven retrieval remain upcoming. No recordings were sent to Gemini, and no private audio is checked into Git.
+
 ## Live Gemini verification: 2026-11-11
 
 - Private key detected without displaying it. Read-only model discovery confirmed access to the configured Gemini model.

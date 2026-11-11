@@ -19,7 +19,7 @@ These are project design choices informed by the course topics, not claimed inst
 
 ## Current boundaries
 
-A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. No audio analysis, pretrained audio classifier, experimental comparison, is complete; Gemini connectivity is verified on a live smoke request. Synthetic fixtures test software behavior only. Tests substituting a fake SDK or HTTP transport verify retries and validation, not Transformer quality or provider access.
+A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. Local audio signal analysis is implemented. A pretrained audio classifier and experimental comparison remain upcoming; Gemini connectivity is verified on a live smoke request. Synthetic fixtures test software behavior only. Tests substituting a fake SDK or HTTP transport verify retries and validation, not Transformer quality or provider access.
 
 The real catalog has unknown mood; no mood penalty is applied during baseline retrieval. The UI obtains genre options and provenance from the backend health response. Metadata is historical; source links refer to the dataset when a track-specific URL is unavailable. No recordings are redistributed.
 
@@ -30,3 +30,7 @@ LLM network work runs in a synchronous FastAPI handler, with a 30-second provide
 Gemini is the default. It uses the existing HTTP client with a key in the `x-goog-api-key` header, not URL parameters. An inlined portable JSON schema derived from `Plan` constrains response structure; complete string/list limits are checked by Pydantic afterward; backend validation independently enforces music constraints. Incomplete/blocked responses and invalid plans never count as successful LLM generation. Only two calls are allowed and quotas/access failures immediately trigger a labelled baseline fallback. No free-text provider errors or response bodies are exposed. OpenAI remains an explicit alternative, never an automatic fallback.
 
 Constraint repair can select a duration-fitting subset only from valid, unique model-proposed IDs and enforce requested energy order. It retains model title/explanations, revalidates against the original candidate pool, and reports `llm_repaired`. Repair failure triggers the bounded correction attempt or baseline fallback. Record raw validation failure and repair separately in future comparative evaluation. A single live smoke test does not establish broad reliability, semantic quality, or billing-tier status.
+
+## Audio signal boundary
+
+`backend/audio.py` decodes bounded MP3/WAV uploads, extracts local signal descriptors and returns `AudioAnalysis`. The async endpoint closes uploads on every path and runs CPU work in a worker thread. Source-channel RMS is preserved without gain normalization; tempo/spectral analysis uses 22.05 kHz mono with cancellation detection. Silence has null BPM and no fabricated mood. The Streamlit analysis page plots small envelopes and exports JSON. No audio enters the LLM prompt or feature-distance retrieval yet. See `docs/audio-analysis.md` for the exact conventions.
