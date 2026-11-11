@@ -6,7 +6,7 @@ The default catalog contains **240 real FMA tracks**, with published artist/titl
 
 ## Windows quick start
 
-Python 3.13.7 was found locally. The text prototype uses this interpreter. Reassess audio-model compatibility before adding the Phase 2 dependencies; use Python 3.11/3.12 if the selected model requires it.
+Verified locally on Windows with Python 3.13.7, CPU ONNX Runtime, and librosa. No GPU is required for the current implementation.
 
 ```powershell
 python -m venv .venv
@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 68 tests; live real-catalog baseline generation and both server health endpoints were also checked. Gemini inference is verified on a live smoke request with labelled constraint repair; MP3/WAV signal analysis is implemented and verified on generated audio fixtures; local pretrained mood/genre inference is implemented; its accuracy is not yet evaluated on our project dataset.
+For the exact verified versions, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has **81 tests**. Local audio/model inference and the complete upload-to-playlist interface have been checked. Three targeted live Gemini planning checks passed with one provider call each and no repair/fallback; these are integration checks, not a recommendation-quality benchmark.
 
 In a second terminal at the project root:
 
@@ -39,7 +39,7 @@ Keep paid billing disabled in your Google project. Free-tier quotas and project 
 
 The backend sends a Pydantic JSON schema through Gemini's REST API using the existing `httpx` dependency, then validates both JSON and playlist constraints. Status is available at `/llm/status`, exposing provider/model/readiness only. Optional OpenAI support remains available with `LLM_PROVIDER=openai`, `OPENAI_API_KEY` and `OPENAI_MODEL`. The sidebar displays the selected provider. Never paste keys into chat or commit them.
 
-Official documentation: https://ai.google.dev/api/generate-content and https://ai.google.dev/gemini-api/docs/structured-output . Free-tier model pricing: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . A live Gemini smoke request succeeded with `llm_repaired`; see `evaluation/gemini-live-smoke.json`. This single request establishes connectivity and a validated repaired output, not recommendation quality or reliability across requests.
+Official documentation: https://ai.google.dev/api/generate-content and https://ai.google.dev/gemini-api/docs/structured-output . Free-tier pricing: https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash-lite . Current live records: `evaluation/planner-live-checks.json`; earlier free-form failures and repairs remain preserved in their historical smoke files.
 
 ## Audio analysis
 
@@ -61,21 +61,32 @@ Streamlit → FastAPI → catalog validation → feature-distance retrieval → 
 
 - Retrieval ranks up to 60 candidates by squared energy distance, squared scaled BPM distance, and a categorical mood mismatch penalty. Genre is an exact filter; mood is a soft preference.
 - The baseline uses a 0/1 duration knapsack, preferring earlier similarity-ranked candidates on ties, then sorts energy when requested. Duration coverage is its primary optimization; it is a simple comparison baseline, not an optimal music recommender. Free text is not interpreted by the baseline.
-- The Transformer receives candidate metadata plus the complete musical request and decides track membership, order, title, and explanations. It does not merely annotate a preselected playlist.
+- Deterministic code constructs up to eight valid ordered mixes, including the baseline. The Transformer chooses the mix that best fits natural-language instructions/audio cues and generates its title, rationale and track notes. Its option choice determines actual tracks and order. This bounds the selection space; it does not permit arbitrary combinations outside the offered alternatives.
 - Backend code rejects unknown/duplicate IDs, duration overflow, duration more than 60 seconds below the best feasible candidate fit, and nonmonotonic requested energy progression. Titles, artists and durations come from the catalog, never from generated text.
-- If an otherwise valid model proposal violates duration or energy order, deterministic repair may fit only the model-proposed tracks. It never introduces baseline candidates, and the result is labelled `llm_repaired`. Unknown/duplicate IDs remain rejected. Transition explanations may refer to a prior ordering.
+- Chosen options are already duration/order checked and revalidated. Unknown options or invalid note IDs are rejected. The current strategy does not trim or reorder a model choice. `llm_repaired` applies only to historical free-form generation records. Planning diagnostics disclose whether the selected mix matches the baseline.
 - At most two provider requests occur per generation (transport/SDK retries disabled). Access, quota and network failures fall back immediately; invalid output gets one correction attempt. Failure uses a clearly labelled deterministic fallback. Natural-language instruction satisfaction remains a soft goal for later human evaluation.
 
 ## Milestones
 
 0. Environment, configuration and tests.
-1. Text-based vertical slice and licensed real catalog (current); verify one authorized live model call next.
+1. Text-based vertical slice, licensed catalog and live model connection (implemented).
 2. Audio upload/validation, signal features, and local pretrained mood/genre estimates (current).
 3. Upload-to-playlist integration using compatible BPM and coarse genre cues (current); aligned catalog audio embeddings remain a possible extension.
-4. Improve prompts and planning using observed failures.
+4. Constraint-safe alternative construction and LLM choice with diagnostics (implemented); broader quality evaluation next.
 5. Integrate and polish the complete audio flow.
 6. Held-out baseline versus LLM evaluation with measured results.
 7. Documentation and presentation preparation; no presentation file yet.
+
+## Reproduce planner checks
+
+```powershell
+# Offline: construct and validate alternatives, no provider request
+.\.venv\Scripts\python.exe scripts/check_planner.py
+# Live: explicitly call the configured provider; its quota/billing terms apply
+.\.venv\Scripts\python.exe scripts/check_planner.py --live --output evaluation/planner-live-checks.json
+```
+
+See `docs/planner-reliability.md` for the design, selection limits and recorded results. Constraint validity is primarily provided by deterministic code; selecting a different mix is not evidence of better recommendations.
 
 ## Evaluation plan
 

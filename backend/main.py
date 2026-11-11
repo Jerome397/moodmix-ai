@@ -49,13 +49,15 @@ def playlist(request: PlaylistRequest):
         context = resolve_context(request, catalog)
         candidates = retrieve(catalog, request, context)
         resolved_request = request.model_copy(update={"bpm": context.target_bpm})
-        plan, method, warnings = generate(candidates, resolved_request)
+        planning_diagnostics = {}
+        plan, method, warnings = generate(candidates, resolved_request, audit=planning_diagnostics)
         tracks = validate_plan(plan, candidates, request)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     total = sum(t.duration_seconds for t in tracks)
     return {"title": plan.title, "method": method, "warnings": context.warnings + warnings,
             "retrieval_context": asdict(context),
+            "planning_diagnostics": planning_diagnostics,
             **catalog_info(catalog), "duration_seconds": total,
             "duration_error_seconds": request.duration_minutes * 60 - total,
             "latency_seconds": perf_counter() - start,

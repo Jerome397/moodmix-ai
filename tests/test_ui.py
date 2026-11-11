@@ -75,3 +75,26 @@ def test_audio_upload_to_playlist_navigation(monkeypatch):
     next(c for c in ui.checkbox if c.label == "Use analyzed audio as reference").set_value(False).run()
     next(b for b in ui.button if b.label == "Generate playlist").click().run()
     assert not ui.session_state["playlist"]["retrieval_context"]["audio_reference_attached"]
+
+
+def test_llm_rationale_and_selection_diagnostics_are_displayed(monkeypatch):
+    import httpx
+    from backend import generation
+    from backend.schemas import PlaylistDecision, PlannedTrack
+    config = generation.Settings(_env_file=None, llm_provider="gemini", gemini_api_key="offline-test")
+    monkeypatch.setattr(generation, "Settings", lambda: config)
+    def decide(settings, payload, correction):
+        option = payload["feasible_options"][1]
+        return PlaylistDecision(option_id=option["option_id"], title="Distinct AI choice", rationale="A different valid mix fits the supplied musical request.",
+            track_reasons=[PlannedTrack(track_id=i, explanation="Selected for the requested flow.") for i in option["track_ids"]])
+    monkeypatch.setattr(generation, "gemini_plan", decide)
+    client = TestClient(app)
+    monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/llm/status" if url.endswith("/llm/status") else "/health"))
+    monkeypatch.setattr(httpx, "post", lambda url, json, timeout: client.post("/playlist", json=json))
+    ui = AppTest.from_file(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py", default_timeout=120).run()
+    ui.sidebar.radio[0].set_value("Playlist Generator").run()
+    next(r for r in ui.radio if r.label == "Planner").set_value("llm")
+    next(b for b in ui.button if b.label == "Generate playlist").click().run()
+    assert not ui.exception
+    assert ui.session_state["playlist"]["planning_diagnostics"]["selected_option_id"] == "mix-02"
+    assert any("different valid mix" in item.value for item in ui.markdown)

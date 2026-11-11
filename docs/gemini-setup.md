@@ -6,7 +6,7 @@
 4. Open the local `.env` file in VS Code. Enter the key after `GEMINI_API_KEY=`; do not include it in chat, screenshots, or Git commits.
 5. Keep `LLM_PROVIDER=gemini` and `GEMINI_MODEL=gemini-3.5-flash-lite`. This model's documented standard text input/output currently has a free tier. If unavailable in your account, choose another documented free-tier structured-output model after checking its pricing.
 6. Save, then open MoodMix and select **Playlist Generator → llm**. The sidebar reports configuration readiness, which does not guarantee account access or free quota. Settings are read on each backend request, so changes to `.env` do not require a restart; backend code changes do.
-7. A live model result shows **Actual planner: llm** or **llm_repaired**. The latter means deterministic code fitted constraints using only the model-proposed tracks. A baseline/fallback result is not evidence of Gemini success. A quota error means wait/check AI Studio; no billing upgrade is required by this application.
+7. A current live model result shows **Actual planner: llm** after the model chooses a validated mix. Historical `llm_repaired` records came from the earlier free-form strategy. A baseline/fallback result is not evidence of Gemini success. A quota error means wait/check AI Studio; no billing upgrade is required by this application.
 
 Google AI Studio is where the key and project are managed; MoodMix calls the Gemini Developer API. The app cannot determine the project's billing status from a key. A free-tier model can also incur charges if used through a paid-tier project, so retain the free-tier project setting.
 

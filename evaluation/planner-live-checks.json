@@ -1,0 +1,248 @@
+{
+  "purpose": "Targeted development smoke checks, not a held-out recommendation-quality benchmark",
+  "checked_at_utc": "2026-11-11T13:45:32.902934+00:00",
+  "live": true,
+  "strategy": "feasible_options_v1",
+  "provider": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "configured": true
+  },
+  "cases": [
+    {
+      "case_id": "audio_jazz_rising_10",
+      "request": {
+        "mood": "any",
+        "duration_minutes": 10,
+        "genre": "jazz",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "rising",
+        "instructions": "Use the upload as a loose reference. Prefer a varied lineup with as many distinct artists as practical, building to a lively finish.",
+        "mode": "llm",
+        "audio_reference": {
+          "bpm": 129.19921875,
+          "duration_seconds": 30.0,
+          "is_silent": false,
+          "neural_status": "ok",
+          "mood_scores": [
+            {
+              "label": "happy",
+              "score": 0.04046709090471268
+            },
+            {
+              "label": "sad",
+              "score": 0.362429678440094
+            },
+            {
+              "label": "relaxed",
+              "score": 0.9993779063224792
+            },
+            {
+              "label": "aggressive",
+              "score": 0.00011702855408657342
+            }
+          ],
+          "genre_scores": [
+            {
+              "label": "jazz",
+              "score": 0.920793890953064
+            },
+            {
+              "label": "electronic",
+              "score": 0.0506121926009655
+            },
+            {
+              "label": "pop",
+              "score": 0.00820010807365179
+            },
+            {
+              "label": "blues",
+              "score": 0.0049490295350551605
+            },
+            {
+              "label": "rap / hip-hop",
+              "score": 0.0041195098310709
+            },
+            {
+              "label": "rock",
+              "score": 0.0038116401992738247
+            },
+            {
+              "label": "funk / soul / R&B",
+              "score": 0.0029536026995629072
+            },
+            {
+              "label": "folk / country",
+              "score": 0.002445624442771077
+            },
+            {
+              "label": "alternative",
+              "score": 0.002114338567480445
+            }
+          ]
+        },
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "method": "llm",
+      "duration_seconds": 577,
+      "duration_error_seconds": 23,
+      "latency_seconds": 3.512,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-04",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "This mix matches the requested rising progression and 10-minute duration target, cleanly scaling from Reynold Philipsek's low-energy opening into Lozenge's high-energy conclusion with multiple distinct artists.",
+        "selection_changed_from_baseline": true,
+        "membership_changed_from_baseline": true
+      },
+      "warnings": [],
+      "title": "Rising Jazz Ascent",
+      "tracks": [
+        {
+          "track_id": "fma-004151",
+          "title": "Sans Souci",
+          "artist": "Reynold Philipsek",
+          "explanation": "Starts the mix with a gentle, low-energy introduction at 0.13."
+        },
+        {
+          "track_id": "fma-001059",
+          "title": "Numbrcrunchr",
+          "artist": "Lozenge",
+          "explanation": "Steps up the energy to a moderate 0.62 with a fast tempo of 176.8 BPM."
+        },
+        {
+          "track_id": "fma-001064",
+          "title": "Undrbelly",
+          "artist": "Lozenge",
+          "explanation": "Brings the set to a lively finish with peak energy of 0.97."
+        }
+      ]
+    },
+    {
+      "case_id": "electronic_rising_10",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 10,
+        "genre": "electronic",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "rising",
+        "instructions": "Start gently, then build energy. Prefer a lower average energy over a relentless high-energy set.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "method": "llm",
+      "duration_seconds": 599,
+      "duration_error_seconds": 1,
+      "latency_seconds": 3.004,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-01",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "Option 1 perfectly fits the requested 10-minute duration (~10 minutes total) and provides a clear rising energy progression starting from a very low energy track (0.167) and building up moderately to an average energy near 0.51, aligning closely with the user's preference for a relaxed electronic set with a gentle start.",
+        "selection_changed_from_baseline": false,
+        "membership_changed_from_baseline": false
+      },
+      "warnings": [],
+      "title": "Gentle Rising Electronic Mix",
+      "tracks": [
+        {
+          "track_id": "fma-000397",
+          "title": "The Tides Of Land",
+          "artist": "Borful Tang",
+          "explanation": "Starts the set with a very low energy level of 0.167 and a slow tempo, fulfilling the instruction to start gently."
+        },
+        {
+          "track_id": "fma-000533",
+          "title": "Mango Tree",
+          "artist": "Chandeliers",
+          "explanation": "Steps up the energy to 0.539 at a steady 105.9 BPM, creating a smooth middle transition."
+        },
+        {
+          "track_id": "fma-000532",
+          "title": "Big League",
+          "artist": "Chandeliers",
+          "explanation": "Brings the final rise in energy to 0.839 to complete the rising progression without exceeding the overall set bounds."
+        }
+      ]
+    },
+    {
+      "case_id": "variety_steady_15",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 15,
+        "genre": "any",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "steady",
+        "instructions": "Choose a varied lineup with several artists and genres. Keep the flow coherent; avoid relying on just one artist.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "method": "llm",
+      "duration_seconds": 900,
+      "duration_error_seconds": 0,
+      "latency_seconds": 6.896,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-01",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "This 15-minute mix offers a varied lineup spanning electronic, jazz, international, and rock genres across four distinct artists. The energy levels hover closely around the requested 0.5 mark for a steady, relaxed progression.",
+        "selection_changed_from_baseline": false,
+        "membership_changed_from_baseline": false
+      },
+      "warnings": [],
+      "title": "Relaxed World & Jazz Fusion",
+      "tracks": [
+        {
+          "track_id": "fma-000533",
+          "title": "Mango Tree",
+          "artist": "Chandeliers",
+          "explanation": "Chandeliers' 'Mango Tree' introduces the playlist with an electronic groove and an energy level of 0.54."
+        },
+        {
+          "track_id": "fma-000145",
+          "title": "Amoebiasis",
+          "artist": "Amoebic Ensemble",
+          "explanation": "Amoebic Ensemble brings in a jazz element with 'Amoebiasis', smoothly easing the energy to 0.49."
+        },
+        {
+          "track_id": "fma-006330",
+          "title": "Nie Zama Nie Sema",
+          "artist": "The Sounds of Taraab",
+          "explanation": "The Sounds of Taraab add an international flavor with 'Nie Zama Nie Sema', matching an energy of 0.54."
+        },
+        {
+          "track_id": "fma-000255",
+          "title": "We Want to be Old",
+          "artist": "Bird Names",
+          "explanation": "Bird Names concludes the session with 'We Want to be Old', providing a rock-infused finish at 0.44 energy."
+        }
+      ]
+    }
+  ]
+}

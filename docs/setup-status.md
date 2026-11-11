@@ -1,5 +1,13 @@
 # Initial setup verification
 
+## Constraint-safe LLM planning: 2026-11-11
+
+- Replaced free-form duration arithmetic with up to eight distinct, prevalidated mix options. The model's decision changes actual membership/order; diagnostics separately report selection and membership changes relative to the baseline.
+- Added strict option/track-note validation, provider-call counts, raw decision failure counts, rationale display and reproducible offline/live development checks. Original hard constraints and the existing 60-second coverage tolerance are unchanged.
+- **81 offline tests passed in 18.36 seconds**, including constraint coverage at multiple durations/progressions, real membership changes, invalid decisions, retries, provider failures and UI rationale display.
+- Three targeted live Gemini cases succeeded with one call each, no raw validation failures and no repair/fallback: audio-guided jazz 577/600 seconds, electronic 599/600 seconds, and mixed-style 900/900 seconds. Each offered eight distinct track sets. One model choice changed membership from the baseline; two chose the baseline option.
+- Records: `evaluation/planner-live-checks.json`. These development checks establish integration success for these cases, not general reliability, model arithmetic ability or better music recommendations. Blinded/held-out quality evaluation remains next.
+
 ## Audio-to-playlist integration: 2026-11-11
 
 - Added a typed, bounded audio-reference summary, optional BPM targeting and soft genre-cue ranking, while keeping RMS and catalog energy separate.

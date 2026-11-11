@@ -78,9 +78,10 @@ def test_neural_summary_reaches_llm_with_effective_tempo(monkeypatch):
     monkeypatch.setattr(generation, "Settings", lambda: config)
     def planner(settings, payload, correction):
         captured.update(payload)
-        from backend.schemas import Track
-        candidates = [next(t for t in tracks if t.track_id == item["track_id"]) for item in payload["candidates"]]
-        return baseline(candidates, PlaylistRequest.model_validate(payload["request"]))
+        from backend.schemas import PlaylistDecision, PlannedTrack
+        option = payload["feasible_options"][0]
+        return PlaylistDecision(option_id=option["option_id"], title="Audio-guided mix", rationale="Fits the supplied reference.",
+            track_reasons=[PlannedTrack(track_id=i, explanation="Selected using supplied metadata.") for i in option["track_ids"]])
     monkeypatch.setattr(generation, "gemini_plan", planner)
     response = TestClient(app).post("/playlist", json=request.model_dump())
     assert response.status_code == 200 and response.json()["method"] == "llm"

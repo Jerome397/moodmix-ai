@@ -18,16 +18,19 @@ def retrieve(tracks: list[Track], request: PlaylistRequest, context: RetrievalCo
     return sorted(eligible, key=lambda t: (distance(t), t.track_id))[:60]
 
 
-def baseline(candidates: list[Track], request: PlaylistRequest) -> Plan:
-    # 0/1 knapsack: maximize duration without exceeding the requested cap.
-    # Candidate order resolves ties in favor of more similar tracks.
-    cap = request.duration_minutes * 60
+def duration_combinations(candidates: list[Track], cap: int) -> dict[int, list[Track]]:
+    """0/1 duration knapsack; earlier candidates win ties for each total."""
     reachable: dict[int, list[Track]] = {0: []}
     for track in candidates:
         for seconds, chosen in list(reachable.items()):
             total = seconds + track.duration_seconds
             if total <= cap and total not in reachable:
                 reachable[total] = chosen + [track]
+    return reachable
+
+
+def baseline(candidates: list[Track], request: PlaylistRequest) -> Plan:
+    reachable = duration_combinations(candidates, request.duration_minutes * 60)
     chosen = reachable[max(reachable)]
     if not chosen:
         raise ValueError("No candidate fits the requested duration.")

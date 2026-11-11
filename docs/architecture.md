@@ -2,13 +2,13 @@
 
 ## Phase 1 contracts
 
-`PlaylistRequest` captures validated explicit preferences plus free text. `Track` holds canonical metadata and provenance. `Plan` contains only IDs and explanations, so model-written titles or artist names cannot overwrite catalog metadata. FastAPI hydrates IDs after semantic validation.
+`PlaylistRequest` captures validated explicit preferences plus free text. `Track` holds canonical metadata and provenance. `PlaylistDecision` selects a validated option and supplies title/rationale/notes. `Plan` materializes canonical track IDs and explanations; model-written artist names cannot overwrite catalog metadata. FastAPI hydrates IDs after semantic validation.
 
 The current retrieval distance is `energy_difference² + (BPM_difference / 180)² + 0.25 * mood_mismatch`. This fixed scaling is documented for development only. Phase 3 must compare consistently extracted features from catalog audio and uploads; dataset-specific energy scales must not be silently mixed.
 
 ## GenAI course connections
 
-- Neural networks: explain learned audio representations once the audio model is chosen, distinguishing predictions from signal measurements.
+- Neural networks: MusiCNN embeddings and pretrained classification heads provide learned audio representations, distinct from signal measurements.
 - Transformers: a pretrained language model conditions on instructions and retrieved candidates to generate a structured sequence of playlist decisions. This is inference, not training or fine-tuning.
 - Evaluation: choose multiple criteria tied to user goals, maintain separate development and held-out requests, evaluate human judges, and record failures before fallback.
 - Retrieval versus fine-tuning: supplying catalog entries at inference supplies information without changing weights. Our current feature retrieval is deterministic; it is not a learned embedding system.
@@ -27,9 +27,9 @@ LLM network work runs in a synchronous FastAPI handler, with a 30-second provide
 
 ## Provider adapter
 
-Gemini is the default. It uses the existing HTTP client with a key in the `x-goog-api-key` header, not URL parameters. An inlined portable JSON schema derived from `Plan` constrains response structure; complete string/list limits are checked by Pydantic afterward; backend validation independently enforces music constraints. Incomplete/blocked responses and invalid plans never count as successful LLM generation. Only two calls are allowed and quotas/access failures immediately trigger a labelled baseline fallback. No free-text provider errors or response bodies are exposed. OpenAI remains an explicit alternative, never an automatic fallback.
+Gemini is the default. It uses the existing HTTP client with a key in the `x-goog-api-key` header, not URL parameters. An inlined portable JSON schema derived from `PlaylistDecision` constrains response structure; complete string/list limits are checked by Pydantic afterward; backend validation independently enforces music constraints. Incomplete/blocked responses and invalid plans never count as successful LLM generation. Only two calls are allowed and quotas/access failures immediately trigger a labelled baseline fallback. No free-text provider errors or response bodies are exposed. OpenAI remains an explicit alternative, never an automatic fallback.
 
-Constraint repair can select a duration-fitting subset only from valid, unique model-proposed IDs and enforce requested energy order. It retains model title/explanations, revalidates against the original candidate pool, and reports `llm_repaired`. Repair failure triggers the bounded correction attempt or baseline fallback. Record raw validation failure and repair separately in future comparative evaluation. A single live smoke test does not establish broad reliability, semantic quality, or billing-tier status.
+The current planner builds up to eight unique, constraint-valid ordered alternatives from the retrieved pool. Gemini chooses one option with a rationale; the backend preserves exactly its membership/order and revalidates it. The baseline is included so evaluation can report whether the model changed selection or chose the baseline. Missing individual notes use an explicitly labelled playlist rationale. Raw validation failures, provider calls and fallback reasons are separate diagnostics. The earlier free-form repair helper is retained for historical reproduction, not called by the current strategy. See `docs/planner-reliability.md`.
 
 ## Audio signal boundary
 

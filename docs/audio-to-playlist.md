@@ -19,7 +19,7 @@ This milestone compares only quantities supported on both sides:
 - **Mood:** the real catalog has no validated mood annotations, so neural mood scores become soft LLM planning context. They do not establish track-level mood matches. A desired mood explicitly selected by the user takes priority; following uploaded mood cues is offered only when cues exist. The baseline does not infer missing catalog moods.
 - **RMS/spectral descriptors:** not compared with Echo Nest energy or used to invent missing acoustic features. Catalog energy remains controlled by the independent user slider. Learned audio embeddings are not compared because catalog embeddings are unavailable.
 
-Retrieval returns up to 60 candidates using feature distance. The baseline still prioritizes duration coverage with similarity-ranked tie breaking, so improved candidate ranking does not guarantee improved playlist relevance. Gemini selects/organizes candidates under the same validation/repair rules used for text-only generation. No performance improvement claim is made without held-out evaluation.
+Retrieval returns up to 60 candidates using feature distance. The baseline still prioritizes duration coverage with similarity-ranked tie breaking, so improved candidate ranking does not guarantee improved playlist relevance. Gemini chooses among constraint-valid alternative mixes using the same strategy as text-only generation. No performance improvement claim is made without held-out evaluation.
 
 Catalog entries explicitly titled `interview` are excluded from music recommendations while preserved in the sourced metadata. This conservative filter was added after a live check surfaced an interview segment; it is not a comprehensive speech detector or a complete catalog audit.
 
@@ -29,10 +29,10 @@ Catalog entries explicitly titled `interview` are excluded from music recommenda
 
 The summary is retained in the Streamlit session and sent to the backend with the generation request. In LLM mode it also reaches the configured provider alongside preferences and candidate metadata. The recording and waveform remain local. This endpoint accepts client-supplied analysis summaries; it does not cryptographically certify that an external caller ran the analysis pipeline.
 
-The response's `retrieval_context` records whether a reference was attached, the effective tempo target, compatible genre affinities, cues compared and warnings. `baseline`, `llm`, `llm_repaired` and `fallback` retain their existing distinct meanings.
+The response's `retrieval_context` records whether a reference was attached, the effective tempo target, compatible genre affinities, cues compared and warnings. Current outcomes are `baseline`, `llm` and `fallback`; `llm_repaired` describes historical free-form generation.
 
 ## Verification
 
 Automated tests check ranking changes, explicit overrides, unsupported mappings, out-of-range tempo, invalid/duplicate scores, rejection of waveform/RMS fields, silent references, end-to-end upload/analysis/retrieval, Streamlit navigation and detachment, and the exact summary delivered to a mocked LLM. Live smoke checks use the previously licensed Vibe Ace example. Neither smoke results nor synthetic fixtures constitute a recommendation-quality benchmark.
 
-The initial live baseline UI check succeeded. Subsequent live Gemini requests received the summary but failed provider or duration validation and returned labelled baseline fallback; those attempts are retained in `evaluation/audio-pipeline-smoke.json`. Candidate IDs are now also enumerated in Gemini's output schema. This milestone does not claim a successful new live audio-guided LLM plan; duration-planning reliability remains a required next improvement.
+The initial live baseline UI check succeeded. Subsequent live Gemini requests received the summary but failed provider or duration validation and returned labelled baseline fallback; those attempts are retained in `evaluation/audio-pipeline-smoke.json`. Candidate IDs are now also enumerated in Gemini's output schema. Those records describe the earlier free-form strategy. The later feasible-option strategy passed a targeted live audio-guided case; see `evaluation/planner-live-checks.json` and `planner-reliability.md`.

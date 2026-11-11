@@ -164,6 +164,13 @@ else:
     if result := st.session_state.get("playlist"):
         st.subheader(result["title"])
         st.caption(f"Actual planner: {result['method']} · {result['catalog_kind']}")
+        diagnostics = result.get("planning_diagnostics", {})
+        if diagnostics.get("outcome") == "llm":
+            st.write(diagnostics["rationale"])
+            with st.expander("How this mix was planned"):
+                provider_name = {"gemini": "Gemini", "openai": "OpenAI"}.get(diagnostics.get("provider"), "The model")
+                st.caption(f"{provider_name} chose among {diagnostics['option_count']} duration-checked ordered mixes ({diagnostics['distinct_track_sets']} distinct track sets).")
+                st.caption("Track selection " + ("differs from" if diagnostics["membership_changed_from_baseline"] else "matches") + " the content-based baseline for this request.")
         context = result.get("retrieval_context", {})
         for warning in result["warnings"]:
             if warning not in context.get("warnings", []):

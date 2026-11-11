@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from backend.main import app
 from backend.catalog import load_catalog as load_catalog_file
 from pathlib import Path
-from backend.schemas import PlaylistRequest, Plan, PlannedTrack
+from backend.schemas import PlaylistRequest, Plan, PlannedTrack, PlaylistDecision
 from backend.recommendation import retrieve, baseline, validate_plan
 from backend.generation import generate
 
@@ -92,7 +92,7 @@ def test_valid_llm_plan_is_preserved(monkeypatch):
     catalog = load_catalog()
     request = PlaylistRequest(mode="llm")
     plan = baseline(catalog, request)
-    plan.title = "Model-selected title"
+    plan = PlaylistDecision(option_id="mix-01", title="Model-selected title", rationale="Fits the request.", track_reasons=plan.tracks)
     class FakeClient:
         def __init__(self, **kwargs):
             self.responses = self

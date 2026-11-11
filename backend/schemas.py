@@ -74,3 +74,11 @@ class PlannedTrack(StrictModel):
 class Plan(StrictModel):
     title: str = Field(min_length=1, max_length=150)
     tracks: list[PlannedTrack] = Field(min_length=1, max_length=100)
+
+
+class PlaylistDecision(StrictModel):
+    """LLM chooses a prevalidated sequence rather than doing duration arithmetic."""
+    option_id: str
+    title: str = Field(min_length=1, max_length=150)
+    rationale: str = Field(min_length=1, max_length=1000)
+    track_reasons: list[PlannedTrack] = Field(max_length=100)
