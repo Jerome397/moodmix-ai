@@ -2,7 +2,7 @@
 
 Phase 1: a local text-to-playlist prototype with content-based retrieval, an optional OpenAI Transformer planner, backend validation, and a Streamlit interface.
 
-**Current catalog is entirely synthetic development data.** Track names, artists, duration, BPM, energy, genre and mood are invented fixtures, not real music metadata or measured features. No audio playback or real-track evaluation is supported yet. No GenAI superiority claims have been established.
+The default catalog contains **240 real FMA tracks**, with published artist/title/duration/genre metadata and Echo Nest tempo/energy attributes. Mood is explicitly unknown. No recordings or audio playback are bundled. No GenAI superiority claims have been established. The fictional development catalog remains only for isolated tests. See `data/ATTRIBUTION.md` and `data/catalog.manifest.json` for licensing, provenance, and selection rules.
 
 ## Windows quick start
 
@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 12 tests; live baseline generation and both server health endpoints were also checked. Hosted inference and real audio remain unverified.
+For the exact versions verified in the initial Windows setup, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has 15 tests; live real-catalog baseline generation and both server health endpoints were also checked. Hosted inference and real audio remain unverified.
 
 In a second terminal at the project root:
 
@@ -44,7 +44,7 @@ Streamlit → FastAPI → catalog validation → feature-distance retrieval → 
 ## Milestones
 
 0. Environment, configuration and tests.
-1. Text-based vertical slice (current), then source a licensed real catalog and verify one authorized live model call.
+1. Text-based vertical slice and licensed real catalog (current); verify one authorized live model call next.
 2. Audio validation, librosa features, and a suitable pretrained audio model.
 3. Match audio and catalog feature definitions and normalization.
 4. Improve prompts and planning using observed failures.
@@ -59,6 +59,17 @@ Record requested constraints, selected IDs, actual planner (including fallback),
 ## Team ownership
 
 For five students: audio processing; catalog/retrieval; GenAI planning; backend/frontend; evaluation/documentation. For four, combine application integration and documentation. Agree shared Pydantic contracts before parallel implementation.
+
+## Rebuild the real catalog
+
+Download the official 342 MiB FMA metadata ZIP into the ignored `tmp/` directory, then run:
+
+```powershell
+curl.exe -L --fail -o tmp/fma_metadata.zip https://os.unil.cloud.switch.ch/fma/fma_metadata.zip
+.\.venv\Scripts\python.exe scripts/import_fma.py tmp/fma_metadata.zip
+```
+
+The importer verifies the official SHA-1 before parsing and writes only the selected metadata and manifest. No audio archive is required. Records are selected round-robin by top-level genre from ascending FMA IDs after filtering for complete attributes. This is a development catalog, not a representative random sample or a held-out evaluation set. Echo Nest energy must not be directly equated with uploaded audio RMS. Mood preferences reach the LLM, but cannot currently be scored against mood ground truth.
 
 ## Troubleshooting
 

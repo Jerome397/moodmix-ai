@@ -17,6 +17,10 @@ class Track(StrictModel):
     energy: float = Field(ge=0, le=1)
     mood: str
     source: str
+    source_url: str = ""
+    metadata_license: str = ""
+    energy_source: str = "synthetic fixture"
+    mood_source: str = "synthetic fixture"
 
 
 class PlaylistRequest(StrictModel):

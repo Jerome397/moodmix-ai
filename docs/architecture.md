@@ -19,6 +19,8 @@ These are project design choices informed by the course topics, not claimed inst
 
 ## Current boundaries
 
-No audio analysis, pretrained audio classifier, genuine music catalog, experimental comparison, or live provider verification is complete in this milestone. Synthetic fixtures test software behavior only. Tests substituting a fake SDK verify retries and validation, not Transformer quality or provider access.
+A genuine 240-track FMA metadata catalog is available with published Echo Nest attributes and CC BY 4.0 attribution. No audio analysis, pretrained audio classifier, experimental comparison, or live provider verification is complete. Synthetic fixtures test software behavior only. Tests substituting a fake SDK verify retries and validation, not Transformer quality or provider access.
+
+The real catalog has unknown mood; no mood penalty is applied during baseline retrieval. The UI obtains genre options and provenance from the backend health response. Metadata is historical; source links refer to the dataset when a track-specific URL is unavailable. No recordings are redistributed.
 
 LLM network work runs in a synchronous FastAPI handler, with a 30-second SDK timeout and up to two requests. It is appropriate for a local student prototype, not a production multi-user workload. The browser never receives API keys.

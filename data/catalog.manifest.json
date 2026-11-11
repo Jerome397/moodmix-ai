@@ -1,0 +1,26 @@
+{
+  "dataset": "FMA (ISMIR 2017)",
+  "archive_url": "https://os.unil.cloud.switch.ch/fma/fma_metadata.zip",
+  "archive_sha1": "f0df49ffe5f2a6008d7dc83c6915b31835dfe733",
+  "metadata_license": "CC BY 4.0",
+  "attribution": "Michaël Defferrard, Kirell Benzi, Pierre Vandergheynst, Xavier Bresson. FMA: A Dataset For Music Analysis. ISMIR 2017.",
+  "reference": "https://github.com/mdeff/fma",
+  "tracks": 240,
+  "selection": "Ascending FMA ID, round-robin over genre_top; complete metadata and Echo Nest features; 60–900 s duration, 40–220 BPM, energy in [0,1]",
+  "mood": "Unknown: no mood ground truth imported",
+  "recordings_redistributed": false,
+  "genres": {
+    "blues": 21,
+    "classical": 21,
+    "electronic": 21,
+    "experimental": 17,
+    "folk": 20,
+    "hip-hop": 20,
+    "instrumental": 20,
+    "international": 20,
+    "jazz": 20,
+    "old-time / historic": 20,
+    "pop": 20,
+    "rock": 20
+  }
+}

@@ -8,7 +8,8 @@ def retrieve(tracks: list[Track], request: PlaylistRequest) -> list[Track]:
         raise ValueError("No tracks match the requested genre.")
     def distance(track: Track) -> float:
         # BPM is scaled by 180 BPM; energy already lies in [0, 1].
-        return (track.energy - request.energy) ** 2 + ((track.bpm - request.bpm) / 180) ** 2 + 0.25 * (track.mood.lower() != request.mood.lower())
+        mood_penalty = 0.25 * (track.mood.lower() != request.mood.lower()) if track.mood != "unknown" and request.mood != "any" else 0
+        return (track.energy - request.energy) ** 2 + ((track.bpm - request.bpm) / 180) ** 2 + mood_penalty
     return sorted(eligible, key=lambda t: (distance(t), t.track_id))[:60]
 
 

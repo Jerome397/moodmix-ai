@@ -1,5 +1,13 @@
 # Initial setup verification
 
+## Real catalog milestone: verified 2026-11-11
+
+- Official FMA metadata archive downloaded; SHA-1 matches `f0df49ffe5f2a6008d7dc83c6915b31835dfe733`.
+- Imported 240 real tracks across 12 top-level genres with published Echo Nest tempo/energy, metadata attribution, and a reproducible selection manifest.
+- Full automated suite: **15 passed in 4.25 seconds**; dependency check passed.
+- Live Streamlit form exercised against the actual HTTP backend after replacing stale server processes: four real tracks, 900 seconds, baseline mode. Backend reports 240 tracks; Streamlit health returns `ok`.
+- No audio, mood classifier, hosted LLM call, or comparative model-quality experiment is claimed. Mood is unknown in the current catalog.
+
 ## Resumed setup: verified 2026-11-11
 
 - Dependency installation succeeded using `--no-cache-dir`; `pip check` reports no broken requirements.
