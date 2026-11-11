@@ -4,10 +4,34 @@ import httpx
 import pandas as pd
 import streamlit as st
 
+
+def use_analyzed_audio():
+    """Carry only the small analysis summary to the playlist page."""
+    analysis = st.session_state["audio_analysis"]
+    prediction = analysis.get("music_model") or {}
+    successful = prediction.get("status") == "ok"
+    bpm = analysis.get("bpm")
+    st.session_state["audio_reference"] = {
+        "bpm": bpm if bpm is not None and 0 < bpm <= 400 else None,
+        "duration_seconds": analysis["duration_seconds"], "is_silent": analysis["is_silent"],
+        "neural_status": prediction.get("status", "not_requested"),
+        "mood_scores": prediction.get("mood_scores", []) if successful else [],
+        "genre_scores": prediction.get("genre_scores", []) if successful else [],
+    }
+    st.session_state.pop("use_audio_reference", None)
+    st.session_state.pop("playlist", None)
+    st.session_state["navigation"] = "Playlist Generator"
+
+
+def clear_audio_reference():
+    st.session_state.pop("audio_reference", None)
+    st.session_state.pop("playlist", None)
+
+
 st.set_page_config(page_title="MoodMix AI", page_icon="🎵", layout="wide")
 st.title("🎵 MoodMix AI")
 st.caption("From your musical intent to an explainable playlist")
-page = st.sidebar.radio("Explore", ["Home", "Music Analysis", "Playlist Generator", "Evaluation"])
+page = st.sidebar.radio("Explore", ["Home", "Music Analysis", "Playlist Generator", "Evaluation"], key="navigation")
 api_url = os.getenv("MOODMIX_API_URL", "http://127.0.0.1:8000")
 try:
     health_response = httpx.get(api_url + "/health", timeout=10)
@@ -47,6 +71,8 @@ elif page == "Music Analysis":
         identity = hashlib.sha256(raw + upload.name.encode() + str(include_models).encode()).hexdigest()
         if st.session_state.get("audio_identity") != identity:
             st.session_state.pop("audio_analysis", None)
+            if st.session_state.get("audio_reference"):
+                clear_audio_reference()
         st.audio(raw, format="audio/mpeg" if upload.name.lower().endswith(".mp3") else "audio/wav")
         if st.button("Analyze audio", type="primary"):
             st.session_state.pop("audio_analysis", None)
@@ -89,28 +115,46 @@ elif page == "Music Analysis":
                     st.dataframe(pd.DataFrame(prediction["genre_scores"][:3]), hide_index=True)
                     st.caption(f"{prediction['patches_analyzed']} sampled ~3-second patches. Mood heads are independent; genre is limited to nine training classes. Scores are not calibrated confidence.")
             st.download_button("Download analysis JSON", data=__import__("json").dumps(analysis, indent=2), file_name="moodmix-analysis.json", mime="application/json")
+            usable = not analysis["is_silent"] and (analysis["bpm"] is not None or (analysis.get("music_model") or {}).get("status") == "ok")
+            st.button("Use this audio for a playlist", on_click=use_analyzed_audio, disabled=not usable, type="primary")
+            if not usable:
+                st.caption("Analyze a longer, non-silent music excerpt with usable tempo or neural cues before using it as a playlist reference.")
 elif page == "Evaluation":
     st.info("No comparative experiments have been recorded yet. No model-quality claims are available.")
 else:
+    active_reference = None
+    use_audio_tempo = use_audio_genre = False
+    if reference := st.session_state.get("audio_reference"):
+        if st.checkbox("Use analyzed audio as reference", value=True, key="use_audio_reference"):
+            active_reference = reference
+            st.success("Your analyzed upload is attached. You can change its influence below.")
+            st.caption(f"Upload BPM: {reference['bpm']:.1f}" if reference["bpm"] is not None else "Upload BPM unavailable; use a manual tempo target.")
+            a, b = st.columns(2)
+            tempo_available = reference["bpm"] is not None and 40 <= reference["bpm"] <= 220
+            use_audio_tempo = a.checkbox("Match upload tempo", value=True, disabled=not tempo_available) and tempo_available
+            use_audio_genre = b.checkbox("Prefer upload genre cues", value=True, disabled=not reference["genre_scores"]) and bool(reference["genre_scores"])
+            st.caption("Genre cues affect ranking softly. Your chosen genre filter and desired mood remain your preferences.")
+        st.button("Clear audio reference", on_click=clear_audio_reference)
     if not catalog["mood_available"]:
         st.info("This catalog has no annotated moods. Mood is passed to the LLM as a preference; baseline retrieval uses tempo, energy and genre.")
     with st.form("preferences"):
         left, right = st.columns(2)
-        mood = left.selectbox("Mood", ["relaxed", "happy", "energetic", "melancholic"])
+        mood_options = (["follow uploaded mood cues"] if active_reference and active_reference["mood_scores"] else []) + ["relaxed", "happy", "energetic", "melancholic"]
+        mood = left.selectbox("Mood", mood_options)
         duration = right.slider("Duration cap (minutes)", 3, 60, 15)
         genre = left.selectbox("Genre", ["any", *catalog["genres"]])
         progression = right.selectbox("Energy progression", ["steady", "rising", "falling"])
         energy = left.slider("Target energy (published catalog scale)", 0.0, 1.0, 0.5)
         left.caption("Echo Nest energy is a model-derived attribute, not RMS loudness or a mood confidence score.")
-        bpm = right.slider("Target BPM", 40, 220, 110)
+        bpm = right.slider("Target BPM", 40, 220, round(active_reference["bpm"]) if use_audio_tempo else 110, disabled=use_audio_tempo)
         instructions = st.text_area("Musical instructions", placeholder="Start relaxed, then build toward a lively finish.")
         mode = st.radio("Planner", ["baseline", "llm"], horizontal=True)
-        st.caption("LLM mode sends preferences and candidate metadata to the configured provider (Gemini by default). Keep the Google project on the free tier; quotas apply. Baseline uses explicit controls and does not interpret free text.")
+        st.caption("LLM mode sends preferences, candidate metadata and the attached audio's tempo/model-score summary to the configured provider. Recordings and waveforms stay local. Keep Google on the free tier; quotas apply. Baseline does not interpret free text.")
         submitted = st.form_submit_button("Generate playlist", type="primary")
     if submitted:
         try:
             with st.spinner("Planning your mix…"):
-                response = httpx.post(os.getenv("MOODMIX_API_URL", "http://127.0.0.1:8000") + "/playlist", json=dict(mood=mood, duration_minutes=duration, genre=genre, progression=progression, energy=energy, bpm=bpm, instructions=instructions, mode=mode), timeout=75)
+                response = httpx.post(api_url + "/playlist", json=dict(mood="any" if mood == "follow uploaded mood cues" else mood, duration_minutes=duration, genre=genre, progression=progression, energy=energy, bpm=bpm, instructions=instructions, mode=mode, audio_reference=active_reference, use_audio_tempo=use_audio_tempo, use_audio_genre=use_audio_genre), timeout=75)
                 response.raise_for_status()
                 st.session_state["playlist"] = response.json()
         except httpx.HTTPStatusError as exc:
@@ -120,8 +164,16 @@ else:
     if result := st.session_state.get("playlist"):
         st.subheader(result["title"])
         st.caption(f"Actual planner: {result['method']} · {result['catalog_kind']}")
+        context = result.get("retrieval_context", {})
         for warning in result["warnings"]:
-            st.warning(warning)
+            if warning not in context.get("warnings", []):
+                st.warning(warning)
+        if context.get("audio_reference_attached"):
+            with st.expander("How your upload influenced this playlist", expanded=True):
+                st.write(f"Effective tempo target: {context['target_bpm']:.1f} BPM")
+                st.write("Compared audio cues: " + (", ".join(context["compared_audio_features"]) or "none; estimates supplied as planning context only"))
+                for note in context["warnings"]:
+                    st.caption(note)
         a, b, c = st.columns(3)
         a.metric("Duration", f"{result['duration_seconds'] // 60}:{result['duration_seconds'] % 60:02d}")
         b.metric("Below requested cap", f"{result['duration_error_seconds']} s")

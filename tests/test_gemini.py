@@ -38,6 +38,7 @@ def test_gemini_validated_plan_and_private_header(settings, monkeypatch):
         body = json.loads(req.content)
         assert body["generationConfig"]["responseMimeType"] == "application/json"
         assert "responseJsonSchema" in body["generationConfig"]
+        assert body["generationConfig"]["responseJsonSchema"]["properties"]["tracks"]["items"]["properties"]["track_id"]["enum"] == [t.track_id for t in tracks]
         assert "tools" not in body
         assert request.instructions in body["contents"][0]["parts"][0]["text"]
         return httpx.Response(200, json=envelope(plan))

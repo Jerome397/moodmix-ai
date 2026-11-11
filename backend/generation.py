@@ -15,6 +15,9 @@ SYSTEM_PROMPT = (
     'duration. Get within 60 seconds of the supplied feasible duration. Rising/falling '
     'means monotonic energy order. Unknown mood is not a verified mood label: avoid '
     'claiming that you listened to recordings or measured their emotional content. '
+    'If audio_reference is supplied, its mood/genre scores are uncalibrated estimates. '
+    'Use them as soft context; explicit desired preferences take priority. If mood is any, '
+    'you may follow reference mood cues, but do not assert unknown candidate moods as fact. '
     'Return the requested JSON schema.'
 )
 
@@ -40,7 +43,7 @@ class ProviderFailure(Exception):
     """A sanitized provider failure safe to display."""
 
 
-def gemini_schema() -> dict:
+def gemini_schema(candidate_ids: list[str] | None = None) -> dict:
     """Expand local references and use the portable JSON-schema subset.
 
     Pydantic still enforces all string/list limits after generation. Some Gemini
@@ -59,7 +62,10 @@ def gemini_schema() -> dict:
         return {key: portable(item) for key, item in value.items()
                 if key not in {"$defs", "minLength", "maxLength", "minItems", "maxItems"}}
 
-    return portable(schema)
+    result = portable(schema)
+    if candidate_ids is not None:
+        result["properties"]["tracks"]["items"]["properties"]["track_id"]["enum"] = candidate_ids
+    return result
 
 
 def gemini_plan(settings: Settings, payload: dict, correction: str) -> Plan:
@@ -69,7 +75,7 @@ def gemini_plan(settings: Settings, payload: dict, correction: str) -> Plan:
         'systemInstruction': {'parts': [{'text': SYSTEM_PROMPT}]},
         'contents': [{'role': 'user', 'parts': [{'text': json.dumps(payload) + correction}]}],
         'generationConfig': {'responseMimeType': 'application/json',
-                             'responseJsonSchema': gemini_schema(), 'maxOutputTokens': 4000},
+                             'responseJsonSchema': gemini_schema([item['track_id'] for item in payload['candidates']]), 'maxOutputTokens': 4000},
     }
     # No transport retries, tools, grounding or automatic provider switching.
     try:

@@ -1,16 +1,20 @@
 """Feature-distance retrieval and deterministic duration-constrained baseline."""
 from backend.schemas import Track, PlaylistRequest, Plan, PlannedTrack
+from backend.audio_recommendation import RetrievalContext, resolve_context
 
 
-def retrieve(tracks: list[Track], request: PlaylistRequest) -> list[Track]:
-    eligible = [t for t in tracks if t.duration_seconds <= request.duration_minutes * 60
+def retrieve(tracks: list[Track], request: PlaylistRequest, context: RetrievalContext | None = None) -> list[Track]:
+    context = context or resolve_context(request, tracks)
+    eligible = [t for t in tracks if t.title.strip().casefold() != "interview"
+                and t.duration_seconds <= request.duration_minutes * 60
                 and (request.genre.lower() == "any" or t.genre.lower() == request.genre.lower())]
     if not eligible:
         raise ValueError("No tracks match the requested genre and duration cap.")
     def distance(track: Track) -> float:
         # BPM is scaled by 180 BPM; energy already lies in [0, 1].
         mood_penalty = 0.25 * (track.mood.lower() != request.mood.lower()) if track.mood != "unknown" and request.mood != "any" else 0
-        return (track.energy - request.energy) ** 2 + ((track.bpm - request.bpm) / 180) ** 2 + mood_penalty
+        genre_penalty = 0.15 * (1 - context.genre_affinity.get(track.genre, 0)) if context.genre_affinity else 0
+        return (track.energy - request.energy) ** 2 + ((track.bpm - context.target_bpm) / 180) ** 2 + mood_penalty + genre_penalty
     return sorted(eligible, key=lambda t: (distance(t), t.track_id))[:60]
 
 

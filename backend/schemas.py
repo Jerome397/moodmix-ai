@@ -1,6 +1,6 @@
 """Shared request, catalog, and generated-output contracts."""
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class StrictModel(BaseModel):
@@ -23,6 +23,35 @@ class Track(StrictModel):
     mood_source: str = "synthetic fixture"
 
 
+class MoodCue(StrictModel):
+    label: Literal["happy", "sad", "relaxed", "aggressive"]
+    score: float = Field(ge=0, le=1)
+
+
+class GenreCue(StrictModel):
+    label: Literal["alternative", "blues", "electronic", "folk / country", "funk / soul / R&B", "jazz", "pop", "rap / hip-hop", "rock"]
+    score: float = Field(ge=0, le=1)
+
+
+class AudioReference(StrictModel):
+    """Small client-supplied analysis summary; never raw audio or waveform data."""
+    bpm: float | None = Field(default=None, gt=0, le=400)
+    duration_seconds: float = Field(ge=3, le=120)
+    is_silent: bool
+    neural_status: Literal["ok", "not_requested", "unavailable", "skipped_silence", "skipped_short", "error"] = "not_requested"
+    mood_scores: list[MoodCue] = Field(default_factory=list, max_length=4)
+    genre_scores: list[GenreCue] = Field(default_factory=list, max_length=9)
+
+    @model_validator(mode="after")
+    def validate_cues(self):
+        for scores in (self.mood_scores, self.genre_scores):
+            if len({item.label for item in scores}) != len(scores):
+                raise ValueError("Audio cue labels must be unique.")
+        if self.neural_status != "ok" and (self.mood_scores or self.genre_scores):
+            raise ValueError("Neural cues require a successful model result.")
+        return self
+
+
 class PlaylistRequest(StrictModel):
     mood: str = Field(default="relaxed", max_length=80)
     duration_minutes: int = Field(default=15, ge=3, le=120)
@@ -32,6 +61,9 @@ class PlaylistRequest(StrictModel):
     progression: Literal["steady", "rising", "falling"] = "steady"
     instructions: str = Field(default="", max_length=2000)
     mode: Literal["baseline", "llm"] = "baseline"
+    audio_reference: AudioReference | None = None
+    use_audio_tempo: bool = True
+    use_audio_genre: bool = True
 
 
 class PlannedTrack(StrictModel):

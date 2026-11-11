@@ -8,6 +8,8 @@ from backend.catalog import load_catalog, catalog_info
 from backend.generation import generate, llm_status
 from backend.recommendation import retrieve, validate_plan
 from backend.schemas import PlaylistRequest
+from backend.audio_recommendation import resolve_context
+from dataclasses import asdict
 
 app = FastAPI(title="MoodMix AI", version="0.1.0")
 
@@ -44,13 +46,16 @@ def playlist(request: PlaylistRequest):
     start = perf_counter()
     try:
         catalog = load_catalog()
-        candidates = retrieve(catalog, request)
-        plan, method, warnings = generate(candidates, request)
+        context = resolve_context(request, catalog)
+        candidates = retrieve(catalog, request, context)
+        resolved_request = request.model_copy(update={"bpm": context.target_bpm})
+        plan, method, warnings = generate(candidates, resolved_request)
         tracks = validate_plan(plan, candidates, request)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     total = sum(t.duration_seconds for t in tracks)
-    return {"title": plan.title, "method": method, "warnings": warnings,
+    return {"title": plan.title, "method": method, "warnings": context.warnings + warnings,
+            "retrieval_context": asdict(context),
             **catalog_info(catalog), "duration_seconds": total,
             "duration_error_seconds": request.duration_minutes * 60 - total,
             "latency_seconds": perf_counter() - start,

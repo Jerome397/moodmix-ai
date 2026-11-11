@@ -26,6 +26,13 @@ def test_retrieval_excludes_tracks_longer_than_entire_playlist():
     assert candidates and all(t.duration_seconds <= 180 for t in candidates)
 
 
+def test_retrieval_excludes_catalog_interview_segments():
+    tracks = load_catalog()
+    assert any(t.title.casefold() == "interview" for t in tracks)
+    candidates = retrieve(tracks, PlaylistRequest(genre="jazz"))
+    assert candidates and all(t.title.casefold() != "interview" for t in candidates)
+
+
 def test_import_rejects_unverified_archive(tmp_path):
     archive = tmp_path / "bad.zip"
     archive.write_bytes(b"not an official archive")

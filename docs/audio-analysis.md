@@ -32,7 +32,7 @@ The waveform is a peak-preserving min/max envelope of at most 500 time bins. A s
 
 ## Interpretation limits
 
-BPM can have half/double-tempo errors and can be unreliable on weak, nonmusical, short or changing rhythms. Three detected beats do not constitute a calibrated confidence score. No mood/genre confidence is fabricated. RMS measures digital signal level; it is neither perceptual loudness (LUFS) nor the FMA catalog's Echo Nest energy attribute. The upload is not yet connected to playlist retrieval, since feature scales must first be aligned.
+BPM can have half/double-tempo errors and can be unreliable on weak, nonmusical, short or changing rhythms. Three detected beats do not constitute a calibrated confidence score. No mood/genre confidence is fabricated. RMS measures digital signal level; it is neither perceptual loudness (LUFS) nor the FMA catalog's Echo Nest energy attribute. Upload BPM and compatible genre scores can guide playlist retrieval; RMS and spectral descriptors remain excluded because compatible catalog values are unavailable. See `audio-to-playlist.md`.
 
 ## Verification
 

@@ -1,0 +1,250 @@
+{
+  "purpose": "Single audio-to-playlist integration smoke check, not a quality benchmark",
+  "sample": "First 30 seconds of Vibe Ace by Kevin MacLeod (CC BY 3.0)",
+  "source": "https://freemusicarchive.org/music/Kevin_MacLeod/Jazz_Sampler/Vibe_Ace",
+  "baseline": {
+    "method": "baseline",
+    "duration_seconds": 900,
+    "retrieval_context": {
+      "target_bpm": 129.19921875,
+      "audio_reference_attached": true,
+      "genre_affinity": {
+        "jazz": 0.920793890953064,
+        "electronic": 0.0506121926009655,
+        "pop": 0.00820010807365179,
+        "blues": 0.0049490295350551605,
+        "hip-hop": 0.0041195098310709,
+        "rock": 0.0038116401992738247,
+        "folk": 0.002445624442771077
+      },
+      "compared_audio_features": [
+        "estimated BPM",
+        "soft genre cues"
+      ],
+      "warnings": [
+        "Upload and catalog BPM are estimates from different methods; half/double-tempo errors remain possible.",
+        "Genre estimates provide a soft preference; your selected genre filter takes priority.",
+        "Upload RMS and spectral features are not compared with Echo Nest energy. The energy slider remains your separate preference.",
+        "The catalog has no verified mood labels. Upload mood scores are planning context, not guaranteed track-mood matches."
+      ]
+    }
+  },
+  "audio_reference": {
+    "bpm": 129.19921875,
+    "duration_seconds": 30.0,
+    "is_silent": false,
+    "neural_status": "ok",
+    "mood_scores": [
+      {
+        "label": "happy",
+        "score": 0.04046709090471268
+      },
+      {
+        "label": "sad",
+        "score": 0.362429678440094
+      },
+      {
+        "label": "relaxed",
+        "score": 0.9993779063224792
+      },
+      {
+        "label": "aggressive",
+        "score": 0.00011702855408657342
+      }
+    ],
+    "genre_scores": [
+      {
+        "label": "jazz",
+        "score": 0.920793890953064
+      },
+      {
+        "label": "electronic",
+        "score": 0.0506121926009655
+      },
+      {
+        "label": "pop",
+        "score": 0.00820010807365179
+      },
+      {
+        "label": "blues",
+        "score": 0.0049490295350551605
+      },
+      {
+        "label": "rap / hip-hop",
+        "score": 0.0041195098310709
+      },
+      {
+        "label": "rock",
+        "score": 0.0038116401992738247
+      },
+      {
+        "label": "funk / soul / R&B",
+        "score": 0.0029536026995629072
+      },
+      {
+        "label": "folk / country",
+        "score": 0.002445624442771077
+      },
+      {
+        "label": "alternative",
+        "score": 0.002114338567480445
+      }
+    ]
+  },
+  "llm": {
+    "method": "fallback",
+    "title": "Content-based mix",
+    "duration_seconds": 600,
+    "latency_seconds": 12.305,
+    "raw_validation_errors": [
+      "Playlist duration violates the available-duration tolerance.",
+      "Playlist duration violates the available-duration tolerance."
+    ],
+    "warnings": [
+      "LLM output failed validation. Deterministic baseline used."
+    ],
+    "genre_preference": "jazz",
+    "tracks": [
+      {
+        "track_id": "fma-004154",
+        "title": "interview",
+        "artist": "Reynold Philipsek",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-000144",
+        "title": "Wire Up",
+        "artist": "Amoebic Ensemble",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-000147",
+        "title": "Repetitive Motion Sickness",
+        "artist": "Amoebic Ensemble",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-001060",
+        "title": "Fuck The man",
+        "artist": "Lozenge",
+        "explanation": "Selected by feature similarity and duration fitting."
+      }
+    ]
+  },
+  "first_llm_attempt": {
+    "method": "fallback",
+    "title": "Content-based mix",
+    "duration_seconds": 600,
+    "latency_seconds": 3.1959981999825686,
+    "warnings": [
+      "Upload and catalog BPM are estimates from different methods; half/double-tempo errors remain possible.",
+      "Genre estimates provide a soft preference; your selected genre filter takes priority.",
+      "Upload RMS and spectral features are not compared with Echo Nest energy. The energy slider remains your separate preference.",
+      "The catalog has no verified mood labels. Upload mood scores are planning context, not guaranteed track-mood matches.",
+      "Gemini request failed. Check model availability and project configuration. Deterministic baseline used."
+    ],
+    "tracks": [
+      {
+        "track_id": "fma-004151",
+        "title": "Sans Souci",
+        "artist": "Reynold Philipsek",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-000255",
+        "title": "We Want to be Old",
+        "artist": "Bird Names",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-044797",
+        "title": "I Came From the Coldest Star",
+        "artist": "Archbishop Jason Polland",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-000144",
+        "title": "Wire Up",
+        "artist": "Amoebic Ensemble",
+        "explanation": "Selected by feature similarity and duration fitting."
+      }
+    ]
+  },
+  "earlier_llm_attempt": {
+    "method": "fallback",
+    "title": "Content-based mix",
+    "duration_seconds": 600,
+    "latency_seconds": 7.754,
+    "provider_http_statuses": [
+      200,
+      200
+    ],
+    "warnings": [
+      "LLM output failed validation. Deterministic baseline used."
+    ],
+    "genre_preference": "jazz",
+    "tracks": [
+      {
+        "track_id": "fma-004154",
+        "title": "interview",
+        "artist": "Reynold Philipsek",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-000144",
+        "title": "Wire Up",
+        "artist": "Amoebic Ensemble",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-000147",
+        "title": "Repetitive Motion Sickness",
+        "artist": "Amoebic Ensemble",
+        "explanation": "Selected by feature similarity and duration fitting."
+      },
+      {
+        "track_id": "fma-001060",
+        "title": "Fuck The man",
+        "artist": "Lozenge",
+        "explanation": "Selected by feature similarity and duration fitting."
+      }
+    ]
+  },
+  "final_baseline_check": {
+    "method": "baseline",
+    "duration_seconds": 900,
+    "retrieval_context": {
+      "target_bpm": 129.19921875,
+      "audio_reference_attached": true,
+      "genre_affinity": {
+        "jazz": 0.920793890953064,
+        "electronic": 0.0506121926009655,
+        "pop": 0.00820010807365179,
+        "blues": 0.0049490295350551605,
+        "hip-hop": 0.0041195098310709,
+        "rock": 0.0038116401992738247,
+        "folk": 0.002445624442771077
+      },
+      "compared_audio_features": [
+        "estimated BPM",
+        "soft genre cues"
+      ],
+      "warnings": [
+        "Upload and catalog BPM are estimates from different methods; half/double-tempo errors remain possible.",
+        "Genre estimates provide a soft preference; your selected genre filter takes priority.",
+        "Upload RMS and spectral features are not compared with Echo Nest energy. The energy slider remains your separate preference.",
+        "The catalog has no verified mood labels. Upload mood scores are planning context, not guaranteed track-mood matches."
+      ]
+    },
+    "track_ids": [
+      "fma-001022",
+      "fma-003435",
+      "fma-014585"
+    ]
+  },
+  "notes": [
+    "Earlier LLM attempts preceded the interview exclusion.",
+    "Live LLM attempts in this record fell back; no successful audio-guided LLM plan is claimed.",
+    "Baseline and end-to-end UI integration passed."
+  ]
+}

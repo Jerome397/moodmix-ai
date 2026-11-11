@@ -52,4 +52,4 @@ Offline tests exercise patch shape/limits, label ordering, independent mood sema
 
 Example attribution: **Vibe Ace**, Kevin MacLeod, CC BY 3.0, https://freemusicarchive.org/music/Kevin_MacLeod/Jazz_Sampler/Vibe_Ace . First 30 seconds converted from the checksum-verified official librosa OGG example to WAV for testing. Audio remains in ignored temporary files and is not redistributed. No ground-truth mood annotation was used.
 
-We have not reproduced the authors' reported benchmark metrics or measured accuracy on our users' music. Before using estimates as hard recommendation filters, evaluate held-out music, inspect model failures and consider human mood disagreement. Uploaded-audio predictions are not yet applied to playlist retrieval.
+We have not reproduced the authors' reported benchmark metrics or measured accuracy on our users' music. Before using estimates as hard recommendation filters, evaluate held-out music, inspect model failures and consider human mood disagreement. Uploaded BPM and compatible genre scores can now guide retrieval; mood scores become LLM context. Their effect is optional and reported in the result. See `audio-to-playlist.md`.

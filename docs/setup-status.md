@@ -1,5 +1,14 @@
 # Initial setup verification
 
+## Audio-to-playlist integration: 2026-11-11
+
+- Added a typed, bounded audio-reference summary, optional BPM targeting and soft genre-cue ranking, while keeping RMS and catalog energy separate.
+- Music Analysis can open Playlist Generator with its current analysis attached. Reference controls allow manual override, detachment and clearing. New uploads invalidate prior references.
+- Mood/genre estimates travel to the LLM as uncalibrated context; raw audio, waveforms and filenames do not.
+- **68 offline tests passed in 41.84 seconds**, including real endpoint and Streamlit upload-to-playlist flow, cue ranking, privacy/validation and mocked LLM context propagation. No recommendation-quality improvement is claimed.
+- Live upload-to-analysis-to-baseline UI check passed with the licensed music example; source BPM became the retrieval target. Gemini received the summary in live requests but returned provider/invalid-duration failures and labelled baseline fallback. These attempts are preserved in `evaluation/audio-pipeline-smoke.json`; no new successful audio-guided LLM plan is claimed.
+- Added candidate-ID enums to Gemini output schemas and excluded catalog records explicitly titled `interview` from recommendations. Final live baseline and frontend health checks passed.
+
 ## Local neural music milestone: 2026-11-11
 
 - Downloaded and checksum-pinned official MTG MusiCNN encoder and four mood plus one genre head, running locally through CPU ONNX Runtime. Weights are ignored by Git; setup script and manifest are included.

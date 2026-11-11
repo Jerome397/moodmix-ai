@@ -43,3 +43,35 @@ def test_audio_page_upload_and_measurements(monkeypatch):
     assert not ui.exception
     assert ui.session_state["audio_analysis"]["rms_amplitude"] > .1
     assert len(ui.metric) == 4 and len(ui.dataframe) == 1
+
+
+def test_audio_upload_to_playlist_navigation(monkeypatch):
+    from io import BytesIO
+    from types import SimpleNamespace
+    import httpx
+    import librosa
+    import numpy as np
+    import soundfile as sf
+    import streamlit as st
+    buffer = BytesIO()
+    samples = librosa.clicks(times=np.arange(.5, 12, .5), sr=22050, length=22050 * 12)
+    sf.write(buffer, samples, 22050, format="WAV")
+    monkeypatch.setattr(st, "file_uploader", lambda *args, **kwargs: SimpleNamespace(name="clicks.wav", type="audio/wav", getvalue=buffer.getvalue))
+    client = TestClient(app)
+    monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/llm/status" if url.endswith("/llm/status") else "/health"))
+    def post(url, timeout, **kwargs):
+        return client.post("/audio/analyze" if url.endswith("/audio/analyze") else "/playlist", **kwargs)
+    monkeypatch.setattr(httpx, "post", post)
+    ui = AppTest.from_file(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py", default_timeout=120).run()
+    ui.sidebar.radio[0].set_value("Music Analysis").run()
+    ui.checkbox[0].set_value(False).run()
+    next(b for b in ui.button if b.label == "Analyze audio").click().run()
+    next(b for b in ui.button if b.label == "Use this audio for a playlist").click().run()
+    assert not ui.exception
+    assert ui.sidebar.radio[0].value == "Playlist Generator"
+    next(b for b in ui.button if b.label == "Generate playlist").click().run()
+    assert not ui.exception
+    assert ui.session_state["playlist"]["retrieval_context"]["audio_reference_attached"]
+    next(c for c in ui.checkbox if c.label == "Use analyzed audio as reference").set_value(False).run()
+    next(b for b in ui.button if b.label == "Generate playlist").click().run()
+    assert not ui.session_state["playlist"]["retrieval_context"]["audio_reference_attached"]
