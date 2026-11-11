@@ -1,3 +1,7 @@
+## Development evaluation dashboard — 2026-11-11
+
+Added six reproducible paired cases, catalog fingerprint, numeric preference/diversity/latency measurements and Streamlit results inspection. Live run: 5/6 LLM successes, one HTTP 503 fallback; all 12 final outputs validated. Human ratings remain uncollected; documented a blinded review protocol. Full suite: 83 passed in 16.17 seconds.
+
 # Initial setup verification
 
 ## Constraint-safe LLM planning: 2026-11-11

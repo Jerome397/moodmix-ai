@@ -1,0 +1,1475 @@
+{
+  "schema_version": 1,
+  "suite": "development-v1",
+  "purpose": "Development comparison, not held-out quality evidence",
+  "created_at_utc": "2026-11-11T17:11:16.769427+00:00",
+  "live": true,
+  "catalog_sha256": "48f59378519ed99a2a0b9f46a305ef7a9078bc8d2447561a2f16e5f1e8147d2c",
+  "provider": {
+    "provider": "gemini",
+    "model": "gemini-3.5-flash-lite",
+    "configured": true
+  },
+  "human_ratings": null,
+  "rows": [
+    {
+      "case_id": "gentle_jazz",
+      "requested_mode": "baseline",
+      "actual_method": "baseline",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 10,
+        "genre": "jazz",
+        "energy": 0.3,
+        "bpm": 90.0,
+        "progression": "steady",
+        "instructions": "Prefer a gentle mix with lower average energy and several artists.",
+        "mode": "baseline",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 600,
+      "duration_error_seconds": 0,
+      "artist_count": 2,
+      "genre_count": 1,
+      "artist_diversity": 0.6666666666666666,
+      "mean_energy_distance": 0.3302231535,
+      "mean_bpm_distance": 60.91133333333334,
+      "latency_seconds": 0.0032,
+      "diagnostics": {
+        "strategy": "content_baseline",
+        "provider_calls": 0,
+        "option_count": 0,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "outcome": "baseline"
+      },
+      "warnings": [],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-001022",
+          "title": "Inasmuch As",
+          "artist": "Kyle Bruckmann's Wrack",
+          "duration_seconds": 339,
+          "genre": "jazz",
+          "bpm": 84.696,
+          "energy": 0.312851805,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-001059",
+          "title": "Numbrcrunchr",
+          "artist": "Lozenge",
+          "duration_seconds": 146,
+          "genre": "jazz",
+          "bpm": 176.823,
+          "energy": 0.6216217211,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-001063",
+          "title": "No Fair",
+          "artist": "Lozenge",
+          "duration_seconds": 115,
+          "genre": "jazz",
+          "bpm": 180.607,
+          "energy": 0.9561959344,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-001022",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-001059",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-001063",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "gentle_jazz",
+      "requested_mode": "llm",
+      "actual_method": "llm",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 10,
+        "genre": "jazz",
+        "energy": 0.3,
+        "bpm": 90.0,
+        "progression": "steady",
+        "instructions": "Prefer a gentle mix with lower average energy and several artists.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 543,
+      "duration_error_seconds": 57,
+      "artist_count": 2,
+      "genre_count": 1,
+      "artist_diversity": 1.0,
+      "mean_energy_distance": 0.1759790377,
+      "mean_bpm_distance": 41.306000000000004,
+      "latency_seconds": 1.8423,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-08",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "Option 08 fulfills the user's preference for lower average energy and a relaxed jazz vibe while keeping a duration close to 10 minutes across multiple artists.",
+        "selection_changed_from_baseline": true,
+        "membership_changed_from_baseline": true
+      },
+      "warnings": [],
+      "title": "Gentle Jazz Flow",
+      "tracks": [
+        {
+          "track_id": "fma-000145",
+          "title": "Amoebiasis",
+          "artist": "Amoebic Ensemble",
+          "duration_seconds": 326,
+          "genre": "jazz",
+          "bpm": 120.79,
+          "energy": 0.4877519875,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-004151",
+          "title": "Sans Souci",
+          "artist": "Reynold Philipsek",
+          "duration_seconds": 217,
+          "genre": "jazz",
+          "bpm": 141.822,
+          "energy": 0.1357939121,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000145",
+          "explanation": "Provides a moderate introductory jazz tempo and texture by Amoebic Ensemble."
+        },
+        {
+          "track_id": "fma-004151",
+          "explanation": "Brings a much lower energy level from Reynold Philipsek to complete the relaxed mix."
+        }
+      ]
+    },
+    {
+      "case_id": "electronic_build",
+      "requested_mode": "baseline",
+      "actual_method": "baseline",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 15,
+        "genre": "electronic",
+        "energy": 0.6,
+        "bpm": 125.0,
+        "progression": "rising",
+        "instructions": "Build energy gradually and prefer several artists.",
+        "mode": "baseline",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 900,
+      "duration_error_seconds": 0,
+      "artist_count": 3,
+      "genre_count": 1,
+      "artist_diversity": 0.75,
+      "mean_energy_distance": 0.171139961375,
+      "mean_bpm_distance": 30.533,
+      "latency_seconds": 0.0007,
+      "diagnostics": {
+        "strategy": "content_baseline",
+        "provider_calls": 0,
+        "option_count": 0,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "outcome": "baseline"
+      },
+      "warnings": [],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-000414",
+          "title": "John And Mary - The Restaurant",
+          "artist": "Borful Tang",
+          "duration_seconds": 230,
+          "genre": "electronic",
+          "bpm": 111.627,
+          "energy": 0.3929718001,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000412",
+          "title": "John And Mary - The Meeting",
+          "artist": "Borful Tang",
+          "duration_seconds": 253,
+          "genre": "electronic",
+          "bpm": 67.181,
+          "energy": 0.4629096626,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000384",
+          "title": "Baja Jones",
+          "artist": "Blanketship",
+          "duration_seconds": 249,
+          "genre": "electronic",
+          "bpm": 91.077,
+          "energy": 0.700912391,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000532",
+          "title": "Big League",
+          "artist": "Chandeliers",
+          "duration_seconds": 168,
+          "genre": "electronic",
+          "bpm": 142.017,
+          "energy": 0.8395289172,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000414",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000412",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000384",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000532",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "electronic_build",
+      "requested_mode": "llm",
+      "actual_method": "llm",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 15,
+        "genre": "electronic",
+        "energy": 0.6,
+        "bpm": 125.0,
+        "progression": "rising",
+        "instructions": "Build energy gradually and prefer several artists.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 900,
+      "duration_error_seconds": 0,
+      "artist_count": 3,
+      "genre_count": 1,
+      "artist_diversity": 0.75,
+      "mean_energy_distance": 0.171139961375,
+      "mean_bpm_distance": 30.533,
+      "latency_seconds": 1.8727,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-01",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "Option mix-01 carefully builds energy from relaxed ambient levels up to a high-energy electronic finale, hitting a mean energy close to the requested 0.6 and featuring three distinct artists over a 15-minute runtime.",
+        "selection_changed_from_baseline": false,
+        "membership_changed_from_baseline": false
+      },
+      "warnings": [],
+      "title": "Electronic Ascent",
+      "tracks": [
+        {
+          "track_id": "fma-000414",
+          "title": "John And Mary - The Restaurant",
+          "artist": "Borful Tang",
+          "duration_seconds": 230,
+          "genre": "electronic",
+          "bpm": 111.627,
+          "energy": 0.3929718001,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000412",
+          "title": "John And Mary - The Meeting",
+          "artist": "Borful Tang",
+          "duration_seconds": 253,
+          "genre": "electronic",
+          "bpm": 67.181,
+          "energy": 0.4629096626,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000384",
+          "title": "Baja Jones",
+          "artist": "Blanketship",
+          "duration_seconds": 249,
+          "genre": "electronic",
+          "bpm": 91.077,
+          "energy": 0.700912391,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000532",
+          "title": "Big League",
+          "artist": "Chandeliers",
+          "duration_seconds": 168,
+          "genre": "electronic",
+          "bpm": 142.017,
+          "energy": 0.8395289172,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000414",
+          "explanation": "Starts the mix with a low, relaxed energy of 0.39 to ease into the progression."
+        },
+        {
+          "track_id": "fma-000412",
+          "explanation": "Slightly raises energy to 0.46 while maintaining a calm, atmospheric electronic pace."
+        },
+        {
+          "track_id": "fma-000384",
+          "explanation": "Steps up the energy notably to 0.70, introducing a dynamic shift from Blanketship."
+        },
+        {
+          "track_id": "fma-000532",
+          "explanation": "Caps off the set with a high-energy peak of 0.84 from Chandeliers to fulfill the rising progression."
+        }
+      ]
+    },
+    {
+      "case_id": "rock_cooldown",
+      "requested_mode": "baseline",
+      "actual_method": "baseline",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 10,
+        "genre": "rock",
+        "energy": 0.6,
+        "bpm": 115.0,
+        "progression": "falling",
+        "instructions": "Finish gently; prefer a varied artist lineup.",
+        "mode": "baseline",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 600,
+      "duration_error_seconds": 0,
+      "artist_count": 2,
+      "genre_count": 1,
+      "artist_diversity": 0.5,
+      "mean_energy_distance": 0.10057843572500001,
+      "mean_bpm_distance": 18.7655,
+      "latency_seconds": 0.0008,
+      "diagnostics": {
+        "strategy": "content_baseline",
+        "provider_calls": 0,
+        "option_count": 0,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "outcome": "baseline"
+      },
+      "warnings": [],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-000170",
+          "title": "Industry Standard Massacre",
+          "artist": "Argumentix",
+          "duration_seconds": 181,
+          "genre": "rock",
+          "bpm": 97.88,
+          "energy": 0.7443325625,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000169",
+          "title": "Boss of Goth",
+          "artist": "Argumentix",
+          "duration_seconds": 144,
+          "genre": "rock",
+          "bpm": 94.322,
+          "energy": 0.7228348527,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000177",
+          "title": "Petty Hate Machine",
+          "artist": "Argumentix",
+          "duration_seconds": 129,
+          "genre": "rock",
+          "bpm": 95.932,
+          "energy": 0.5799592774,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000247",
+          "title": "A New Map for Kissing",
+          "artist": "Bird Names",
+          "duration_seconds": 146,
+          "genre": "rock",
+          "bpm": 133.196,
+          "energy": 0.4848943949,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000170",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000169",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000177",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000247",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "rock_cooldown",
+      "requested_mode": "llm",
+      "actual_method": "llm",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 10,
+        "genre": "rock",
+        "energy": 0.6,
+        "bpm": 115.0,
+        "progression": "falling",
+        "instructions": "Finish gently; prefer a varied artist lineup.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 568,
+      "duration_error_seconds": 32,
+      "artist_count": 2,
+      "genre_count": 1,
+      "artist_diversity": 0.5,
+      "mean_energy_distance": 0.211260076625,
+      "mean_bpm_distance": 11.30875,
+      "latency_seconds": 2.4275,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-05",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "Option 05 meets the criteria for a 10-minute runtime (~9.5 minutes), features a falling energy sequence from 0.78 down to 0.21, incorporates a varied artist lineup featuring Argumentix and Bird Names, and finishes gently with a low-energy, lower-tempo track.",
+        "selection_changed_from_baseline": true,
+        "membership_changed_from_baseline": true
+      },
+      "warnings": [],
+      "title": "Gentle Falling Rock",
+      "tracks": [
+        {
+          "track_id": "fma-000176",
+          "title": "Step Up to Legends",
+          "artist": "Argumentix",
+          "duration_seconds": 160,
+          "genre": "rock",
+          "bpm": 123.583,
+          "energy": 0.779140487,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000247",
+          "title": "A New Map for Kissing",
+          "artist": "Bird Names",
+          "duration_seconds": 146,
+          "genre": "rock",
+          "bpm": 133.196,
+          "energy": 0.4848943949,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000255",
+          "title": "We Want to be Old",
+          "artist": "Bird Names",
+          "duration_seconds": 182,
+          "genre": "rock",
+          "bpm": 122.811,
+          "energy": 0.4357120518,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000171",
+          "title": "Marching as Technitions",
+          "artist": "Argumentix",
+          "duration_seconds": 80,
+          "genre": "rock",
+          "bpm": 125.645,
+          "energy": 0.2134937338,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000176",
+          "explanation": "Starts the set with an energetic rock track by Argumentix at 0.78 energy."
+        },
+        {
+          "track_id": "fma-000247",
+          "explanation": "Brings in Bird Names for artist variety and shifts energy down to 0.48."
+        },
+        {
+          "track_id": "fma-000255",
+          "explanation": "Continues the falling energy progression with a moderate 0.44 energy level from Bird Names."
+        },
+        {
+          "track_id": "fma-000171",
+          "explanation": "Finishes gently with a very low energy track (0.21) by Argumentix to close out the playlist smoothly."
+        }
+      ]
+    },
+    {
+      "case_id": "mixed_artists",
+      "requested_mode": "baseline",
+      "actual_method": "baseline",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 15,
+        "genre": "any",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "steady",
+        "instructions": "Maximize artist variety while keeping a coherent flow.",
+        "mode": "baseline",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 900,
+      "duration_error_seconds": 0,
+      "artist_count": 4,
+      "genre_count": 4,
+      "artist_diversity": 1.0,
+      "mean_energy_distance": 0.03922228852500001,
+      "mean_bpm_distance": 9.226750000000003,
+      "latency_seconds": 0.0056,
+      "diagnostics": {
+        "strategy": "content_baseline",
+        "provider_calls": 0,
+        "option_count": 0,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "outcome": "baseline"
+      },
+      "warnings": [],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-000533",
+          "title": "Mango Tree",
+          "artist": "Chandeliers",
+          "duration_seconds": 191,
+          "genre": "electronic",
+          "bpm": 105.913,
+          "energy": 0.539879231,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000145",
+          "title": "Amoebiasis",
+          "artist": "Amoebic Ensemble",
+          "duration_seconds": 326,
+          "genre": "jazz",
+          "bpm": 120.79,
+          "energy": 0.4877519875,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-006330",
+          "title": "Nie Zama Nie Sema",
+          "artist": "The Sounds of Taraab",
+          "duration_seconds": 201,
+          "genre": "international",
+          "bpm": 100.781,
+          "energy": 0.5404739624,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000255",
+          "title": "We Want to be Old",
+          "artist": "Bird Names",
+          "duration_seconds": 182,
+          "genre": "rock",
+          "bpm": 122.811,
+          "energy": 0.4357120518,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000533",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000145",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-006330",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000255",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "mixed_artists",
+      "requested_mode": "llm",
+      "actual_method": "llm",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 15,
+        "genre": "any",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "steady",
+        "instructions": "Maximize artist variety while keeping a coherent flow.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 900,
+      "duration_error_seconds": 0,
+      "artist_count": 4,
+      "genre_count": 4,
+      "artist_diversity": 1.0,
+      "mean_energy_distance": 0.03922228852500001,
+      "mean_bpm_distance": 9.226750000000003,
+      "latency_seconds": 2.1544,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-01",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "Option mix-01 aligns best with the user's relaxed mood, moderate target energy of around 0.5, and a steady 15-minute runtime across diverse genres.",
+        "selection_changed_from_baseline": false,
+        "membership_changed_from_baseline": false
+      },
+      "warnings": [],
+      "title": "Relaxed Eclectic Mix",
+      "tracks": [
+        {
+          "track_id": "fma-000533",
+          "title": "Mango Tree",
+          "artist": "Chandeliers",
+          "duration_seconds": 191,
+          "genre": "electronic",
+          "bpm": 105.913,
+          "energy": 0.539879231,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000145",
+          "title": "Amoebiasis",
+          "artist": "Amoebic Ensemble",
+          "duration_seconds": 326,
+          "genre": "jazz",
+          "bpm": 120.79,
+          "energy": 0.4877519875,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-006330",
+          "title": "Nie Zama Nie Sema",
+          "artist": "The Sounds of Taraab",
+          "duration_seconds": 201,
+          "genre": "international",
+          "bpm": 100.781,
+          "energy": 0.5404739624,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000255",
+          "title": "We Want to be Old",
+          "artist": "Bird Names",
+          "duration_seconds": 182,
+          "genre": "rock",
+          "bpm": 122.811,
+          "energy": 0.4357120518,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000533",
+          "explanation": "Starts the mix with an electronic groove close to the target energy of 0.5."
+        },
+        {
+          "track_id": "fma-000145",
+          "explanation": "Brings in a smooth jazz texture that maintains a steady energy level."
+        },
+        {
+          "track_id": "fma-006330",
+          "explanation": "Introduces international flair with a comfortable mid-tempo pace."
+        },
+        {
+          "track_id": "fma-000255",
+          "explanation": "Concludes the 15-minute set with relaxed rock instrumentation."
+        }
+      ]
+    },
+    {
+      "case_id": "short_pop",
+      "requested_mode": "baseline",
+      "actual_method": "baseline",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 5,
+        "genre": "pop",
+        "energy": 0.7,
+        "bpm": 120.0,
+        "progression": "steady",
+        "instructions": "Choose an upbeat short break with distinct artists if practical.",
+        "mode": "baseline",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 300,
+      "duration_error_seconds": 0,
+      "artist_count": 1,
+      "genre_count": 1,
+      "artist_diversity": 0.3333333333333333,
+      "mean_energy_distance": 0.24052302963333336,
+      "mean_bpm_distance": 15.722666666666663,
+      "latency_seconds": 0.0003,
+      "diagnostics": {
+        "strategy": "content_baseline",
+        "provider_calls": 0,
+        "option_count": 0,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "outcome": "baseline"
+      },
+      "warnings": [],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-001642",
+          "title": "Hrz",
+          "artist": "So Cow",
+          "duration_seconds": 68,
+          "genre": "pop",
+          "bpm": 97.666,
+          "energy": 0.8318449674,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-001659",
+          "title": "Arse Above Tit",
+          "artist": "So Cow",
+          "duration_seconds": 117,
+          "genre": "pop",
+          "bpm": 100.492,
+          "energy": 0.9456822635,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-001662",
+          "title": "Wackity Schmackity Doo",
+          "artist": "So Cow",
+          "duration_seconds": 115,
+          "genre": "pop",
+          "bpm": 125.326,
+          "energy": 0.355958142,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-001642",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-001659",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-001662",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "short_pop",
+      "requested_mode": "llm",
+      "actual_method": "fallback",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 5,
+        "genre": "pop",
+        "energy": 0.7,
+        "bpm": 120.0,
+        "progression": "steady",
+        "instructions": "Choose an upbeat short break with distinct artists if practical.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 300,
+      "duration_error_seconds": 0,
+      "artist_count": 1,
+      "genre_count": 1,
+      "artist_diversity": 0.3333333333333333,
+      "mean_energy_distance": 0.24052302963333336,
+      "mean_bpm_distance": 15.722666666666663,
+      "latency_seconds": 1.8588,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "failure_kind": "provider_error",
+        "outcome": "fallback"
+      },
+      "warnings": [
+        "Gemini request failed (HTTP 503). Check model availability and project configuration. Deterministic baseline used."
+      ],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-001642",
+          "title": "Hrz",
+          "artist": "So Cow",
+          "duration_seconds": 68,
+          "genre": "pop",
+          "bpm": 97.666,
+          "energy": 0.8318449674,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-001659",
+          "title": "Arse Above Tit",
+          "artist": "So Cow",
+          "duration_seconds": 117,
+          "genre": "pop",
+          "bpm": 100.492,
+          "energy": 0.9456822635,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-001662",
+          "title": "Wackity Schmackity Doo",
+          "artist": "So Cow",
+          "duration_seconds": 115,
+          "genre": "pop",
+          "bpm": 125.326,
+          "energy": 0.355958142,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-001642",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-001659",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-001662",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "long_variety",
+      "requested_mode": "baseline",
+      "actual_method": "baseline",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 30,
+        "genre": "any",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "rising",
+        "instructions": "Prefer many different artists and genres, building toward a lively ending.",
+        "mode": "baseline",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 1800,
+      "duration_error_seconds": 0,
+      "artist_count": 5,
+      "genre_count": 5,
+      "artist_diversity": 0.8333333333333334,
+      "mean_energy_distance": 0.03864961831666668,
+      "mean_bpm_distance": 7.1663333333333314,
+      "latency_seconds": 0.0178,
+      "diagnostics": {
+        "strategy": "content_baseline",
+        "provider_calls": 0,
+        "option_count": 0,
+        "selected_option_id": null,
+        "validation_failures": [],
+        "outcome": "baseline"
+      },
+      "warnings": [],
+      "title": "Content-based mix",
+      "tracks": [
+        {
+          "track_id": "fma-000145",
+          "title": "Amoebiasis",
+          "artist": "Amoebic Ensemble",
+          "duration_seconds": 326,
+          "genre": "jazz",
+          "bpm": 120.79,
+          "energy": 0.4877519875,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-014585",
+          "title": "The Dream of Sergei Prokofiev and Waltz",
+          "artist": "Ergo Phizmiz",
+          "duration_seconds": 239,
+          "genre": "instrumental",
+          "bpm": 120.025,
+          "energy": 0.5339827617,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-014571",
+          "title": "Through the Doors of the Circus",
+          "artist": "Ergo Phizmiz",
+          "duration_seconds": 80,
+          "genre": "instrumental",
+          "bpm": 120.062,
+          "energy": 0.5375216312,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000677",
+          "title": "The_Tension",
+          "artist": "Fanatic",
+          "duration_seconds": 198,
+          "genre": "hip-hop",
+          "bpm": 109.543,
+          "energy": 0.5377457365,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-006330",
+          "title": "Nie Zama Nie Sema",
+          "artist": "The Sounds of Taraab",
+          "duration_seconds": 201,
+          "genre": "international",
+          "bpm": 100.781,
+          "energy": 0.5404739624,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000406",
+          "title": "ELI",
+          "artist": "Borful Tang",
+          "duration_seconds": 756,
+          "genre": "electronic",
+          "bpm": 112.445,
+          "energy": 0.5699256056,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000145",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-014585",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-014571",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000677",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-006330",
+          "explanation": "Selected by feature similarity and duration fitting."
+        },
+        {
+          "track_id": "fma-000406",
+          "explanation": "Selected by feature similarity and duration fitting."
+        }
+      ]
+    },
+    {
+      "case_id": "long_variety",
+      "requested_mode": "llm",
+      "actual_method": "llm",
+      "request": {
+        "mood": "relaxed",
+        "duration_minutes": 30,
+        "genre": "any",
+        "energy": 0.5,
+        "bpm": 110,
+        "progression": "rising",
+        "instructions": "Prefer many different artists and genres, building toward a lively ending.",
+        "mode": "llm",
+        "audio_reference": null,
+        "use_audio_tempo": true,
+        "use_audio_genre": true
+      },
+      "final_valid": true,
+      "duration_seconds": 1792,
+      "duration_error_seconds": 8,
+      "artist_count": 8,
+      "genre_count": 7,
+      "artist_diversity": 1.0,
+      "mean_energy_distance": 0.197460081175,
+      "mean_bpm_distance": 17.976875,
+      "latency_seconds": 2.5111,
+      "diagnostics": {
+        "strategy": "feasible_options_v1",
+        "provider_calls": 1,
+        "option_count": 8,
+        "selected_option_id": "mix-02",
+        "validation_failures": [],
+        "provider": "gemini",
+        "distinct_track_sets": 8,
+        "baseline_option_id": "mix-01",
+        "outcome": "llm",
+        "rationale": "This mix matches the relaxed mood and target 30-minute duration with a rising energy progression from a calm start at 0.26 energy to a lively 0.72 ending. It features high artist and genre diversity across all tracks.",
+        "selection_changed_from_baseline": true,
+        "membership_changed_from_baseline": true
+      },
+      "warnings": [],
+      "title": "Relaxed to Lively Eclectic Journey",
+      "tracks": [
+        {
+          "track_id": "fma-000140",
+          "title": "Queen Of The Wires",
+          "artist": "Alec K. Redfearn & the Eyesores",
+          "duration_seconds": 253,
+          "genre": "folk",
+          "bpm": 107.952,
+          "energy": 0.2656847734,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000822",
+          "title": "Tom & Jerry",
+          "artist": "Hecuba",
+          "duration_seconds": 323,
+          "genre": "pop",
+          "bpm": 119.997,
+          "energy": 0.2751175212,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-044794",
+          "title": "The Great Big Ice Cream Sundae From Outer Space",
+          "artist": "Charlie Burgess",
+          "duration_seconds": 112,
+          "genre": "experimental",
+          "bpm": 92.498,
+          "energy": 0.2868722699,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-014589",
+          "title": "Sad Story",
+          "artist": "Ergo Phizmiz",
+          "duration_seconds": 94,
+          "genre": "instrumental",
+          "bpm": 130.507,
+          "energy": 0.3031245992,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000411",
+          "title": "Orp",
+          "artist": "Borful Tang",
+          "duration_seconds": 146,
+          "genre": "electronic",
+          "bpm": 79.746,
+          "energy": 0.3318425227,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-005019",
+          "title": "Irish and Scotch melodies (take 2)",
+          "artist": "Charles Daab",
+          "duration_seconds": 271,
+          "genre": "old-time / historic",
+          "bpm": 76.143,
+          "energy": 0.3816053908,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-000384",
+          "title": "Baja Jones",
+          "artist": "Blanketship",
+          "duration_seconds": 249,
+          "genre": "electronic",
+          "bpm": 91.077,
+          "energy": 0.700912391,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        },
+        {
+          "track_id": "fma-006332",
+          "title": "Taso's Hasapiko",
+          "artist": "Raya Brass Band",
+          "duration_seconds": 344,
+          "genre": "international",
+          "bpm": 99.273,
+          "energy": 0.7230153356,
+          "mood": "unknown",
+          "source": "FMA 2017 metadata + Echo Nest audio_features",
+          "source_url": "https://github.com/mdeff/fma",
+          "metadata_license": "CC BY 4.0",
+          "energy_source": "Echo Nest energy; not RMS loudness",
+          "mood_source": "not annotated"
+        }
+      ],
+      "notes": [
+        {
+          "track_id": "fma-000140",
+          "explanation": "Provides a very gentle, low-energy folk opening to establish the relaxed mood."
+        },
+        {
+          "track_id": "fma-000822",
+          "explanation": "Maintains the soft atmosphere with low-energy pop."
+        },
+        {
+          "track_id": "fma-044794",
+          "explanation": "Continues the mellow vibe with an experimental track of similar low energy."
+        },
+        {
+          "track_id": "fma-014589",
+          "explanation": "Introduces an instrumental piece that gently nudges the energy upward."
+        },
+        {
+          "track_id": "fma-000411",
+          "explanation": "Brings in a touch of electronic texture while keeping the pace steady."
+        },
+        {
+          "track_id": "fma-005019",
+          "explanation": "Adds historical variety with an old-time melody just before the transition."
+        },
+        {
+          "track_id": "fma-000384",
+          "explanation": "Spikes the energy significantly to build toward the lively ending requested."
+        },
+        {
+          "track_id": "fma-006332",
+          "explanation": "Concludes the playlist with high energy and international flair for a lively finish."
+        }
+      ]
+    }
+  ]
+}

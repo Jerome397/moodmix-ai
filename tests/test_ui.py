@@ -5,6 +5,17 @@ from backend.main import app
 from pathlib import Path
 
 
+def test_evaluation_dashboard(monkeypatch):
+    import httpx
+    client = TestClient(app)
+    monkeypatch.setattr(httpx, "get", lambda url, timeout: client.get("/llm/status" if url.endswith("/llm/status") else "/health"))
+    ui = AppTest.from_file(Path(__file__).resolve().parents[1] / "app" / "streamlit_app.py", default_timeout=20).run()
+    ui.sidebar.radio[0].set_value("Evaluation").run()
+    assert not ui.exception
+    assert len(ui.metric) == 3
+    assert any('No human' in w.value for w in ui.warning)
+
+
 def test_streamlit_baseline_flow(monkeypatch):
     import httpx
     from backend.catalog import load_catalog

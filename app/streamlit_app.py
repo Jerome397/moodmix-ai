@@ -120,7 +120,36 @@ elif page == "Music Analysis":
             if not usable:
                 st.caption("Analyze a longer, non-silent music excerpt with usable tempo or neural cues before using it as a playlist reference.")
 elif page == "Evaluation":
-    st.info("No comparative experiments have been recorded yet. No model-quality claims are available.")
+    import json
+    from pathlib import Path
+    st.header("Planner evaluation")
+    path = Path(__file__).resolve().parents[1] / "evaluation/results.json"
+    if not path.exists():
+        st.info("Run scripts/evaluate.py to record development measurements.")
+    else:
+        report = json.loads(path.read_text(encoding="utf-8"))
+        st.caption(f"{report['suite']} · {report['created_at_utc']}")
+        st.warning("Development cases, not held-out quality evidence. No human relevance or instruction-satisfaction ratings have been collected.")
+        rows = report["rows"]
+        llm_rows = [r for r in rows if r['requested_mode'] == 'llm']
+        a, b, c = st.columns(3)
+        a.metric("Validated outputs", f"{sum(r['final_valid'] for r in rows)}/{len(rows)}")
+        b.metric("LLM outputs / attempts", f"{sum(r['actual_method'] == 'llm' for r in llm_rows)}/{len(llm_rows)}")
+        c.metric("Fallbacks", sum(r['actual_method'] == 'fallback' for r in llm_rows))
+        columns = ['case_id', 'requested_mode', 'actual_method', 'duration_error_seconds', 'artist_count', 'genre_count', 'artist_diversity', 'mean_energy_distance', 'mean_bpm_distance', 'latency_seconds']
+        frame = pd.DataFrame(rows)[columns]
+        st.dataframe(frame, hide_index=True, width="stretch")
+        st.caption("Energy/BPM distances measure proximity to numeric preferences; artist/genre counts measure variety. None establish perceived musical quality. Final validity includes fallback; LLM success is reported separately.")
+        st.subheader("Latency by case")
+        st.bar_chart(frame.pivot(index='case_id', columns='requested_mode', values='latency_seconds'), y_label="Seconds")
+        selected_case = st.selectbox("Inspect case", list(dict.fromkeys(r['case_id'] for r in rows)))
+        for row in rows:
+            if row['case_id'] == selected_case:
+                with st.expander(f"{row['requested_mode']} → {row['actual_method']}"):
+                    st.write(row['request']['instructions'])
+                    st.dataframe(pd.DataFrame(row['tracks'])[['title', 'artist', 'genre', 'duration_seconds', 'energy', 'bpm']], hide_index=True)
+                    st.json(row['diagnostics'])
+        st.download_button("Download evaluation JSON", path.read_text(encoding="utf-8"), "moodmix-evaluation.json", "application/json")
 else:
     active_reference = None
     use_audio_tempo = use_audio_genre = False

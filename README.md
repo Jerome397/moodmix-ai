@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact verified versions, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has **81 tests**. Local audio/model inference and the complete upload-to-playlist interface have been checked. Three targeted live Gemini planning checks passed with one provider call each and no repair/fallback; these are integration checks, not a recommendation-quality benchmark.
+For the exact verified versions, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has **83 tests**. Local audio/model inference and the complete upload-to-playlist interface have been checked. Three targeted live Gemini planning checks passed with one provider call each and no repair/fallback; these are integration checks, not a recommendation-quality benchmark.
 
 In a second terminal at the project root:
 
@@ -90,7 +90,7 @@ See `docs/planner-reliability.md` for the design, selection limits and recorded 
 
 ## Evaluation plan
 
-Record requested constraints, selected IDs, actual planner (including fallback), latency and source catalog version for each trial. Split development prompts from held-out tests. Report raw LLM validity before fallback separately from final output validity. Duration error is absolute target-minus-actual seconds. Mood consistency is a label-based proxy, not emotional ground truth. Diversity can use distinct artists/genres; instruction satisfaction and relevance require a documented human rubric and preferably blinded reviews. Do not report fallback runs as successful GenAI outputs. Test general behavior beyond the narrow task. The dashboard currently contains no experimental results.
+Record requested constraints, selected IDs, actual planner (including fallback), latency and source catalog version for each trial. Split development prompts from held-out tests. Report raw LLM validity before fallback separately from final output validity. Duration error is absolute target-minus-actual seconds. Mood consistency is a label-based proxy, not emotional ground truth. Diversity can use distinct artists/genres; instruction satisfaction and relevance require a documented human rubric and preferably blinded reviews. Do not report fallback runs as successful GenAI outputs. Test general behavior beyond the narrow task. The Evaluation dashboard now displays six paired development cases, with five successful LLM outputs and one provider-error fallback. These are measured development results, not held-out quality evidence. See `docs/evaluation.md` for reproduction and the human-review protocol.
 
 ## Team ownership
 
