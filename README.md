@@ -6,6 +6,8 @@ The default catalog contains **240 real FMA tracks**, with published artist/titl
 
 ## Windows quick start
 
+Already set up on this computer? Double-click **Start MoodMix.bat** in the project folder. It starts missing local services and opens the original app (8501) and conversational Studio (8502) in your default browser. Existing running services are reused. Keep the computer running while using the apps; launch again after a restart. Startup logs are in the ignored `tmp/` folder.
+
 Verified locally on Windows with Python 3.13.7, CPU ONNX Runtime, and librosa. No GPU is required for the current implementation.
 
 ```powershell
