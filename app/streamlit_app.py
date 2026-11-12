@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 from html import escape
+from backend.audio_recommendation import GENRE_TO_CATALOG
 
 
 def use_analyzed_audio():
@@ -21,6 +22,9 @@ def use_analyzed_audio():
         "genre_scores": prediction.get("genre_scores", []) if successful else [],
     }
     st.session_state.pop("use_audio_reference", None)
+    st.session_state["apply_audio_preferences"] = True
+    st.session_state["match_audio_tempo"] = bpm is not None and 40 <= bpm <= 220
+    st.session_state["match_audio_genre"] = successful and bool(prediction.get("genre_scores"))
     st.session_state.pop("playlist", None)
     st.session_state["navigation"] = "Playlist Generator"
 
@@ -164,31 +168,57 @@ elif page == "Evaluation":
                     st.json(row['diagnostics'])
         st.download_button("Download evaluation JSON", path.read_text(encoding="utf-8"), "moodmix-evaluation.json", "application/json")
 else:
+    # Explicit widget keys prevent an earlier visit's form state from masking
+    # newly attached audio. Apply once so later user edits remain editable.
+    if st.session_state.pop("apply_audio_preferences", False):
+        reference = st.session_state["audio_reference"]
+        bpm = reference['bpm']
+        if bpm is not None and 40 <= bpm <= 220:
+            st.session_state['playlist_bpm'] = round(bpm)
+        moods = reference['mood_scores']
+        mood_map = {'happy': 'happy', 'sad': 'melancholic', 'relaxed': 'relaxed', 'aggressive': 'energetic'}
+        strongest_mood = max(moods, key=lambda cue: cue['score'], default=None)
+        st.session_state['playlist_mood'] = mood_map[strongest_mood['label']] if strongest_mood and strongest_mood['score'] >= .5 else 'any'
+        strongest_genre = max(reference['genre_scores'], key=lambda cue: cue['score'], default=None)
+        mapped = GENRE_TO_CATALOG.get(strongest_genre['label']) if strongest_genre else None
+        st.session_state['playlist_genre'] = mapped if mapped in catalog['genres'] else 'any'
     active_reference = None
     use_audio_tempo = use_audio_genre = False
     if reference := st.session_state.get("audio_reference"):
         if st.checkbox("Use analyzed audio as reference", value=True, key="use_audio_reference"):
             active_reference = reference
             st.success("Your analyzed upload is attached. You can change its influence below.")
+            mood_cue = max(reference['mood_scores'], key=lambda cue: cue['score'], default=None)
+            genre_cue = max(reference['genre_scores'], key=lambda cue: cue['score'], default=None)
+            st.caption("Detected cues · Mood: " + (mood_cue['label'] if mood_cue and mood_cue['score'] >= .5 else 'unavailable') + " · Genre: " + (genre_cue['label'] if genre_cue else 'unavailable'))
+            if genre_cue and GENRE_TO_CATALOG.get(genre_cue['label']) not in catalog['genres']:
+                st.caption("The detected genre has no matching catalog category, so the genre filter starts at any.")
             st.caption(f"Upload BPM: {reference['bpm']:.1f}" if reference["bpm"] is not None else "Upload BPM unavailable; use a manual tempo target.")
             a, b = st.columns(2)
             tempo_available = reference["bpm"] is not None and 40 <= reference["bpm"] <= 220
-            use_audio_tempo = a.checkbox("Match upload tempo", value=True, disabled=not tempo_available) and tempo_available
-            use_audio_genre = b.checkbox("Prefer upload genre cues", value=True, disabled=not reference["genre_scores"]) and bool(reference["genre_scores"])
+            st.session_state.setdefault('match_audio_tempo', True)
+            st.session_state.setdefault('match_audio_genre', True)
+            use_audio_tempo = a.checkbox("Match upload tempo", key="match_audio_tempo", disabled=not tempo_available) and tempo_available
+            use_audio_genre = b.checkbox("Prefer upload genre cues", key="match_audio_genre", disabled=not reference["genre_scores"]) and bool(reference["genre_scores"])
             st.caption("Genre cues affect ranking softly. Your chosen genre filter and desired mood remain your preferences.")
         st.button("Clear audio reference", on_click=clear_audio_reference)
     if not catalog["mood_available"]:
         st.info("This catalog has no annotated moods. Mood is passed to the LLM as a preference; baseline retrieval uses tempo, energy and genre.")
     with st.form("preferences"):
         left, right = st.columns(2)
-        mood_options = (["follow uploaded mood cues"] if active_reference and active_reference["mood_scores"] else []) + ["relaxed", "happy", "energetic", "melancholic"]
-        mood = left.selectbox("Mood", mood_options)
+        mood_options = ["relaxed", "happy", "energetic", "melancholic", "any"]
+        mood = left.selectbox("Mood", mood_options, key="playlist_mood")
         duration = right.slider("Duration cap (minutes)", 3, 60, 15)
-        genre = left.selectbox("Genre", ["any", *catalog["genres"]])
+        genre = left.selectbox("Genre", ["any", *catalog["genres"]], key="playlist_genre")
         progression = right.selectbox("Energy progression", ["steady", "rising", "falling"])
         energy = left.slider("Target energy (published catalog scale)", 0.0, 1.0, 0.5)
         left.caption("Echo Nest energy is a model-derived attribute, not RMS loudness or a mood confidence score.")
-        bpm = right.slider("Target BPM", 40, 220, round(active_reference["bpm"]) if use_audio_tempo else 110, disabled=use_audio_tempo)
+        if use_audio_tempo:
+            st.session_state['playlist_bpm'] = round(active_reference['bpm'])
+        st.session_state.setdefault('playlist_bpm', 110)
+        bpm = right.slider("Target BPM", 40, 220, key="playlist_bpm", disabled=use_audio_tempo)
+        if active_reference:
+            right.caption("Tempo, mood and supported genre were filled from your analysis. Duration, energy and progression remain your choices; energy cannot be inferred from RMS. Choose LLM to use mood cues in planning.")
         instructions = st.text_area("Musical instructions", placeholder="Start relaxed, then build toward a lively finish.")
         mode = st.radio("Planner", ["baseline", "llm"], horizontal=True)
         st.caption("LLM mode sends preferences, candidate metadata and the attached audio's tempo/model-score summary to the configured provider. Recordings and waveforms stay local. Keep Google on the free tier; quotas apply. Baseline does not interpret free text.")

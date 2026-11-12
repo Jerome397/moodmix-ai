@@ -1,5 +1,7 @@
 # From uploaded audio to a playlist
 
+**Use this audio for a playlist** fills the visible form from the new analysis, replacing values from a previous visit: supported BPM (40–220), strongest mood attribute scoring at least 0.5 (sad → melancholic, aggressive → energetic), and the strongest genre when its explicit mapping exists in the catalog. Missing mood cues and unsupported genres select `any`. These are editable starting preferences. Duration, catalog energy and progression remain user choices. Tempo matching uses the exact uploaded BPM in the backend; the slider displays its rounded value. Mood cues inform LLM planning because catalog moods are unannotated.
+
 ## User workflow
 
 1. On **Music Analysis**, upload an MP3/WAV excerpt and click **Analyze audio**. Local mood/genre inference is optional; 15–30 seconds is recommended when enabled.

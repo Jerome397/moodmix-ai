@@ -77,12 +77,28 @@ def test_audio_upload_to_playlist_navigation(monkeypatch):
     ui.sidebar.radio[0].set_value("Music Analysis").run()
     ui.checkbox[0].set_value(False).run()
     next(b for b in ui.button if b.label == "Analyze audio").click().run()
+    # Simulate an analysis with neural cues after a prior manual form visit.
+    analysis = dict(ui.session_state['audio_analysis'])
+    analysis['bpm'] = 137.4
+    analysis['music_model'] = {'status': 'ok', 'mood_scores': [{'label': 'sad', 'score': .85}],
+                               'genre_scores': [{'label': 'jazz', 'score': .8}]}
+    ui.session_state['audio_analysis'] = analysis
+    ui.session_state['playlist_bpm'] = 90
+    ui.session_state['playlist_mood'] = 'happy'
+    ui.session_state['playlist_genre'] = 'rock'
     next(b for b in ui.button if b.label == "Use this audio for a playlist").click().run()
     assert not ui.exception
     assert ui.sidebar.radio[0].value == "Playlist Generator"
+    assert next(s for s in ui.slider if s.label == 'Target BPM').value == 137
+    assert next(s for s in ui.selectbox if s.label == 'Mood').value == 'melancholic'
+    assert next(s for s in ui.selectbox if s.label == 'Genre').value == 'jazz'
     next(b for b in ui.button if b.label == "Generate playlist").click().run()
     assert not ui.exception
     assert ui.session_state["playlist"]["retrieval_context"]["audio_reference_attached"]
+    assert ui.session_state['playlist']['retrieval_context']['target_bpm'] == 137.4
+    next(s for s in ui.selectbox if s.label == 'Mood').set_value('happy')
+    next(b for b in ui.button if b.label == 'Generate playlist').click().run()
+    assert next(s for s in ui.selectbox if s.label == 'Mood').value == 'happy'
     next(c for c in ui.checkbox if c.label == "Use analyzed audio as reference").set_value(False).run()
     next(b for b in ui.button if b.label == "Generate playlist").click().run()
     assert not ui.session_state["playlist"]["retrieval_context"]["audio_reference_attached"]
