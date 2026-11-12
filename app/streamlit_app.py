@@ -3,6 +3,8 @@ import os
 import httpx
 import pandas as pd
 import streamlit as st
+from pathlib import Path
+from html import escape
 
 
 def use_analyzed_audio():
@@ -28,9 +30,15 @@ def clear_audio_reference():
     st.session_state.pop("playlist", None)
 
 
+def open_audio_page():
+    st.session_state['navigation'] = 'Music Analysis'
+
+
 st.set_page_config(page_title="MoodMix AI", page_icon="🎵", layout="wide")
-st.title("🎵 MoodMix AI")
-st.caption("From your musical intent to an explainable playlist")
+st.html('<style>' + (Path(__file__).parent / "style.css").read_text(encoding="utf-8") + '</style>')
+st.title("MoodMix AI")
+st.caption("YOUR SOUND. YOUR MOOD. YOUR MIX.")
+st.sidebar.markdown("### ◉ MoodMix\nYour personal music lab")
 page = st.sidebar.radio("Explore", ["Home", "Music Analysis", "Playlist Generator", "Evaluation"], key="navigation")
 api_url = os.getenv("MOODMIX_API_URL", "http://127.0.0.1:8000")
 try:
@@ -55,15 +63,18 @@ previous = st.session_state.get("playlist")
 if previous and previous.get("catalog_kind") != catalog["catalog_kind"]:
     st.session_state.pop("playlist", None)
 if page == "Home":
-    st.header("A playlist with a plan")
-    st.write("Compare content-based recommendations with a Transformer planner that selects and orders catalog tracks from your instructions.")
-    st.info(f"Current catalog: {catalog['catalog_kind']}. Upload an excerpt on Music Analysis to inspect measured audio features.")
-    st.write("Choose Playlist Generator to explore real track metadata, published audio features, and source links.")
+    st.html('<div class="hero"><span class="eyebrow">A little science. A lot of sound.</span><h2>Find the next track<br>for your state of mind.</h2><p>Start with a song or a feeling. Explore your audio, shape the energy, and create an explainable mix from real music metadata.</p></div>')
+    for col, icon, title, description in zip(st.columns(3), ['01 / LISTEN', '02 / CREATE', '03 / COMPARE'], ['Discover your sound', 'Shape your next mix', 'Explore the results'], ['Upload an MP3 or WAV. We analyze the first 30 seconds locally for tempo, mood and genre cues.', 'Choose a mood, set the pace, and let your preferences guide a playlist with a reason behind every track.', 'Compare baseline and AI planning with recorded measurements and transparent results.']):
+        with col:
+            st.html(f'<div class="feature-card"><span class="eyebrow">{icon}</span><h3>{title}</h3><p>{description}</p></div>')
+    st.write("")
+    st.button("Start with your audio →", type="primary", on_click=open_audio_page)
+    st.caption(f"{catalog['catalog_tracks']} real catalog tracks · Local audio analysis · Explainable recommendations")
 elif page == "Music Analysis":
     st.header("Understand your audio")
-    st.caption("MP3/WAV · 3–120 seconds · up to 20 MiB · mono/stereo · 8–96 kHz")
-    st.info("Analysis and pretrained mood/genre estimates run locally; no audio is sent to Gemini. Use 15–30 seconds of music for a more useful estimate.")
-    upload = st.file_uploader("Choose an audio excerpt", type=["mp3", "wav"])
+    st.caption("Drop in a song. Discover its tempo, texture, and musical character.")
+    st.info("Full songs welcome: uploads longer than 30 seconds are automatically analyzed using only the first 30 seconds. MP3/WAV · up to 200 MiB · at least 3 seconds. Audio analysis stays local.")
+    upload = st.file_uploader("Choose your audio", type=["mp3", "wav"])
     include_models = st.checkbox("Estimate mood and genre locally", value=True)
     if upload is not None:
         import hashlib
@@ -76,8 +87,8 @@ elif page == "Music Analysis":
         st.audio(raw, format="audio/mpeg" if upload.name.lower().endswith(".mp3") else "audio/wav")
         if st.button("Analyze audio", type="primary"):
             st.session_state.pop("audio_analysis", None)
-            if len(raw) > 20 * 1024 * 1024:
-                st.error("Audio must be 20 MiB or smaller.")
+            if len(raw) > 200 * 1024 * 1024:
+                st.error("Audio must be 200 MiB or smaller.")
             else:
                 try:
                     with st.spinner("Measuring audio features… First use may take longer while signal-processing functions initialize."):
@@ -90,6 +101,8 @@ elif page == "Music Analysis":
                 except httpx.RequestError:
                     st.error("Audio analysis could not finish. Check the backend and try a shorter excerpt.")
         if analysis := st.session_state.get("audio_analysis"):
+            if analysis.get('trimmed'):
+                st.success(f"Ready: analyzed the first 30 seconds of your {analysis['original_duration_seconds'] / 60:.1f}-minute upload.")
             a, b, c, d = st.columns(4)
             a.metric("Estimated BPM", f"{analysis['bpm']:.1f}" if analysis["bpm"] is not None else "Unavailable")
             b.metric("RMS amplitude", f"{analysis['rms_amplitude']:.4f}")
@@ -215,6 +228,8 @@ else:
         b.metric("Below requested cap", f"{result['duration_error_seconds']} s")
         c.metric("Latency", f"{result['latency_seconds']:.2f} s")
         frame = pd.DataFrame(result["tracks"])
+        for number, track in enumerate(result['tracks'], 1):
+            st.html(f'<div class="track-card"><div class="track-number">{number:02}</div><div><strong>{escape(track["title"])}</strong><p>{escape(track["artist"])} · {escape(track["genre"])} · {track["duration_seconds"] // 60}:{track["duration_seconds"] % 60:02d}</p><p>{escape(track["explanation"])}</p></div></div>')
         st.dataframe(frame[["title", "artist", "duration_seconds", "genre", "energy", "explanation"]], hide_index=True, width="stretch")
         st.line_chart(frame["energy"])
         with st.expander("Track sources and feature provenance"):

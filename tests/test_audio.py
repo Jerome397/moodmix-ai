@@ -78,10 +78,30 @@ def test_invalid_inputs(content, name, status):
     assert error.value.status_code == status
 
 
-@pytest.mark.parametrize("duration", [1, 121])
+@pytest.mark.parametrize("duration", [1])
 def test_duration_limits(duration):
-    with pytest.raises(AudioInputError, match="between 3 and 120"):
+    with pytest.raises(AudioInputError, match="at least 3"):
         analyze_audio(encoded(np.zeros(8000 * duration), sr=8000), "duration.wav")
+
+
+@pytest.mark.parametrize('duration', [30, 31, 121])
+def test_long_upload_analyzes_only_first_30_seconds(duration):
+    samples = np.zeros(8000 * duration, dtype=np.float32)
+    samples[8000 * 30:] = .8
+    result = analyze_audio(encoded(samples, 8000), 'song.wav')
+    assert result.duration_seconds == 30
+    assert result.original_duration_seconds == duration
+    assert result.trimmed == (duration > 30)
+    assert result.is_silent  # Loud samples after the cut must not affect features.
+    assert result.waveform[-1]['time_seconds'] <= 30
+
+
+def test_large_wav_over_previous_limit_is_trimmed():
+    content = encoded(np.zeros((96000 * 60, 2), dtype=np.float32), 96000)
+    assert len(content) > 20 * 1024 * 1024
+    response = TestClient(app).post('/audio/analyze', files={'file': ('large.wav', content, 'audio/wav')})
+    assert response.status_code == 200
+    assert response.json()['trimmed'] and response.json()['duration_seconds'] == 30
 
 
 def test_reject_renamed_format(tone):

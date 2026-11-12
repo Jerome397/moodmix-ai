@@ -1,0 +1,24 @@
+.stApp {background: radial-gradient(ellipse at 85% 0%, #183b3c66, transparent 45%), #0b101b;}
+.block-container {max-width: 1240px; padding-top: 2.6rem; padding-bottom: 4rem;}
+h1, h2, h3 {letter-spacing: -.035em;}
+[data-testid="stSidebar"] {background: #101725; border-right: 1px solid #273347;}
+[data-testid="stSidebar"] .block-container {padding-top: 2rem;}
+[data-testid="stMetric"] {background: linear-gradient(135deg, #1a2936, #131d2c); border: 1px solid #2a3a4c; border-radius: 18px; padding: 20px;}
+[data-testid="stMetricLabel"] {color: #a7b8cc;}
+[data-testid="stMetricValue"] {color: #b9f7df;}
+[data-testid="stForm"], [data-testid="stFileUploader"] {border: 1px solid #2b3a4c; border-radius: 20px; background: #131e2bcc; padding: 24px;}
+.stButton button, .stDownloadButton button {border-radius: 12px; min-height: 44px; font-weight: 600;}
+.stButton button[kind="primary"] {background: #a7f3d0; color: #102620; border: none;}
+[data-testid="stExpander"] {border-radius: 14px; border-color: #2b3a4c;}
+.hero {padding: 38px; border: 1px solid #33504d; border-radius: 26px; background: linear-gradient(120deg, #183d39, #182439 80%); margin: 10px 0 28px;}
+.eyebrow {color: #a7f3d0; font-size: .75rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;}
+.hero h2 {font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.1; max-width: 750px; margin: 12px 0;}
+.hero p {color: #becddd; max-width: 640px; font-size: 1.05rem;}
+.feature-card {background: #151f2d; border: 1px solid #2a394c; border-radius: 20px; padding: 25px; min-height: 190px;}
+.feature-card h3 {font-size: 1.25rem; margin-top: 12px;}
+.feature-card p {color: #acbdd0; font-size: .95rem;}
+.track-card {border: 1px solid #2a394c; background: #151f2d; border-radius: 16px; padding: 18px 22px; margin: 10px 0; display: flex; gap: 20px; align-items: flex-start;}
+.track-number {color: #a7f3d0; font-size: 1.2rem; font-weight: 700; min-width: 28px;}
+.track-card strong {font-size: 1.05rem;}
+.track-card p {color: #acbdd0; margin: 5px 0 0; font-size: .9rem;}
+@media (max-width: 640px) {.hero {padding: 24px;} .block-container {padding-top: 1.5rem;} .feature-card {min-height: auto; margin-bottom: 12px;}}

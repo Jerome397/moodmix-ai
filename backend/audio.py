@@ -12,9 +12,9 @@ from pydantic import Field
 from backend.schemas import StrictModel
 from backend.music_model import MusicPrediction, predict_music
 
-MAX_UPLOAD_BYTES = 20 * 1024 * 1024
+MAX_UPLOAD_BYTES = 200 * 1024 * 1024
 MIN_DURATION_SECONDS = 3
-MAX_DURATION_SECONDS = 120
+MAX_DURATION_SECONDS = 30
 ANALYSIS_SAMPLE_RATE = 22050
 
 
@@ -26,6 +26,8 @@ class AudioInputError(ValueError):
 
 class AudioAnalysis(StrictModel):
     duration_seconds: float
+    original_duration_seconds: float
+    trimmed: bool
     source_sample_rate: int
     analysis_sample_rate: int
     channels: int
@@ -49,14 +51,14 @@ class AudioAnalysis(StrictModel):
 
 
 def analyze_audio(content: bytes, filename: str, include_models: bool = False) -> AudioAnalysis:
-    """Validate and analyze a 3–120 second MP3/WAV without saving input audio."""
+    """Analyze at most the first 30 seconds without saving the input audio."""
     suffix = Path(filename).suffix.lower()
     if suffix not in {".mp3", ".wav"}:
         raise AudioInputError("Upload an MP3 or WAV file.", 415)
     if not content:
         raise AudioInputError("The uploaded file is empty.", 400)
     if len(content) > MAX_UPLOAD_BYTES:
-        raise AudioInputError("Audio must be 20 MiB or smaller.", 413)
+        raise AudioInputError("Audio must be 200 MiB or smaller.", 413)
     try:
         with sf.SoundFile(BytesIO(content)) as source:
             allowed = {".mp3": {"MP3"}, ".wav": {"WAV", "WAVEX"}}
@@ -66,17 +68,20 @@ def analyze_audio(content: bytes, filename: str, include_models: bool = False) -
             duration = source.frames / sr
             if not 8000 <= sr <= 96000 or channels not in (1, 2):
                 raise AudioInputError("Use mono/stereo audio with a sample rate from 8 to 96 kHz.")
-            if not MIN_DURATION_SECONDS <= duration <= MAX_DURATION_SECONDS:
-                raise AudioInputError("Use an audio excerpt between 3 and 120 seconds.")
+            if duration < MIN_DURATION_SECONDS:
+                raise AudioInputError("Audio must contain at least 3 seconds.")
             # Bounded decode even when a damaged file's header is inconsistent.
-            samples = source.read(frames=int(sr * MAX_DURATION_SECONDS) + 1, dtype="float32", always_2d=True)
+            samples = source.read(frames=int(sr * MAX_DURATION_SECONDS), dtype="float32", always_2d=True)
     except (sf.SoundFileError, RuntimeError, OSError) as exc:
         raise AudioInputError("Audio could not be decoded. The file may be damaged or unsupported.") from exc
     if len(samples) < sr * MIN_DURATION_SECONDS or len(samples) > sr * MAX_DURATION_SECONDS:
-        raise AudioInputError("Decoded audio must be between 3 and 120 seconds.")
+        raise AudioInputError("Decoded audio must contain at least 3 seconds.")
     if not np.isfinite(samples).all():
         raise AudioInputError("Audio contains non-finite sample values.")
     warnings = []
+    trimmed = duration > MAX_DURATION_SECONDS
+    if trimmed:
+        warnings.append(f"Automatically trimmed: analyzed only the first 30 seconds of your {duration:.1f}-second upload.")
     rms = float(np.sqrt(np.mean(np.square(samples, dtype=np.float64))))
     peak = float(np.max(np.abs(samples)))
     if peak > 1:
@@ -117,7 +122,8 @@ def analyze_audio(content: bytes, filename: str, include_models: bool = False) -
         waveform.append({"time_seconds": time, "minimum": float(chunk.min()), "maximum": float(chunk.max())})
         timeline.append({"time_seconds": time, "rms_amplitude": float(np.sqrt(np.mean(chunk.astype(np.float64) ** 2)))})
     prediction = predict_music(mono, sr, silent) if include_models else None
-    return AudioAnalysis(duration_seconds=len(samples) / sr, source_sample_rate=sr,
+    return AudioAnalysis(duration_seconds=len(samples) / sr, original_duration_seconds=duration,
+        trimmed=trimmed, source_sample_rate=sr,
         analysis_sample_rate=ANALYSIS_SAMPLE_RATE, channels=channels, decoded_format="MP3" if suffix == ".mp3" else "WAV",
         bpm=bpm, beat_count=beat_count, rms_amplitude=rms, rms_dbfs=20 * float(np.log10(rms)) if rms > 0 else None,
         peak_amplitude=peak, spectral_centroid_hz=centroid, spectral_bandwidth_hz=bandwidth,

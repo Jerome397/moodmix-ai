@@ -4,7 +4,7 @@ The Music Analysis page sends an MP3/WAV excerpt to the local FastAPI endpoint `
 
 ## Input limits
 
-- File size up to 20 MiB; decoded duration 3–120 seconds.
+- File size up to 200 MiB; decoded duration at least 3 seconds; first 30 seconds analyzed.
 - Mono or stereo; source sample rate 8–96 kHz.
 - SoundFile must decode a WAV/WAVEX container for `.wav`, or an MP3 stream for `.mp3`. Renamed files are rejected.
 - Non-finite sample values, malformed data, invalid channel/sample-rate metadata, and unsupported formats are rejected with useful HTTP errors.
@@ -44,3 +44,7 @@ References:
 
 - https://librosa.org/doc/0.11.0/generated/librosa.beat.beat_track.html
 - https://python-soundfile.readthedocs.io/en/latest/
+
+## Automatic excerpt selection
+
+Uploads longer than 30 seconds are automatically decoded only through the first 30 seconds. The response records original_duration_seconds and trimmed alongside the analyzed duration. All signals and neural estimates use the bounded excerpt. Files up to 200 MiB are accepted; the full upload is transferred locally, but never fully decoded or stored as a recording. Playback previews the uploaded song; the displayed analysis describes the opening excerpt.

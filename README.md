@@ -15,7 +15,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-For the exact verified versions, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has **83 tests**. Local audio/model inference and the complete upload-to-playlist interface have been checked. Three targeted live Gemini planning checks passed with one provider call each and no repair/fallback; these are integration checks, not a recommendation-quality benchmark.
+For the exact verified versions, install from `requirements-lock.txt` instead of `requirements.txt`. The verified suite has **86 tests**. Local audio/model inference and the complete upload-to-playlist interface have been checked. Three targeted live Gemini planning checks passed with one provider call each and no repair/fallback; these are integration checks, not a recommendation-quality benchmark.
 
 In a second terminal at the project root:
 
@@ -43,7 +43,7 @@ Official documentation: https://ai.google.dev/api/generate-content and https://a
 
 ## Audio analysis
 
-Open **Music Analysis**, upload an MP3/WAV excerpt (3–120 seconds, up to 20 MiB), then click **Analyze audio**. Playback, estimated BPM, RMS signal level, spectral features, waveform envelope, RMS timeline and JSON export are available. The first analysis may initialize compiled signal routines and take longer.
+Open **Music Analysis**, upload an MP3/WAV excerpt (at least 3 seconds; first 30 seconds analyzed, up to 200 MiB), then click **Analyze audio**. Playback, estimated BPM, RMS signal level, spectral features, waveform envelope, RMS timeline and JSON export are available. The first analysis may initialize compiled signal routines and take longer.
 
 The analysis runs locally via `POST /audio/analyze`; no audio is sent to Gemini. Enable **Estimate mood and genre locally** for pretrained MusiCNN mood attributes and nine-class genre estimates. At least six seconds is required; 15–30 seconds is preferable. Model scores are not calibrated confidence. After analysis, click **Use this audio for a playlist** to carry tempo and model cues into generation. Upload BPM can replace the manual target, compatible genre scores softly affect candidate ranking, and mood scores become LLM context. Catalog Echo Nest energy remains a separate preference, never a substitute for RMS. See `docs/audio-to-playlist.md` for mappings, controls, privacy and limitations. See `docs/audio-analysis.md` for signal formulas and limits, and `docs/audio-models.md` for neural-model setup, licenses and interpretation.
 
