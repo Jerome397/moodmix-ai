@@ -1,0 +1,104 @@
+{
+  "purpose": "Iterative development smoke trials, not a quality benchmark; first two trials precede the explicit fitting tool",
+  "trials": [
+    {
+      "message": "Create a 10 minute jazz mix, starting gently and building energy. Prefer different artists.",
+      "method": "baseline_fallback",
+      "provider_calls": 5,
+      "duration_seconds": 600,
+      "critique_completed": false,
+      "events": [
+        {
+          "tool": "initial_catalog_search",
+          "count": 18
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "budget_exhausted"
+        }
+      ]
+    },
+    {
+      "message": "Create a 10 minute jazz mix, starting gently and building energy. Prefer different artists.",
+      "method": "baseline_fallback",
+      "provider_calls": 5,
+      "duration_seconds": 600,
+      "critique_completed": false,
+      "events": [
+        {
+          "tool": "initial_catalog_search",
+          "count": 18
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "validate_playlist",
+          "valid": false,
+          "error": "Playlist duration violates the available-duration tolerance."
+        },
+        {
+          "tool": "budget_exhausted"
+        }
+      ]
+    },
+    {
+      "message": "Create a 10 minute jazz mix, starting gently and building energy. Prefer different artists.",
+      "method": "agent",
+      "provider_calls": 4,
+      "duration_seconds": 600,
+      "critique_completed": true,
+      "events": [
+        {
+          "tool": "initial_catalog_search",
+          "count": 18
+        },
+        {
+          "tool": "fit_playlist",
+          "valid": false,
+          "error": "Fitting requires unique known IDs."
+        },
+        {
+          "tool": "fit_playlist",
+          "valid": true,
+          "error": null
+        },
+        {
+          "tool": "critique_complete",
+          "critique": "The validated playlist successfully captures a rising jazz energy curve within the target duration bounds, and I am satisfied with the current selection."
+        }
+      ]
+    }
+  ]
+}
